@@ -127,6 +127,34 @@ test('requiredEntityTypes supports symbol entity types', (t) => {
   t.end();
 });
 
+test('isImmutablePlugin rejects exotic entities containers', (t) => {
+  const bads: unknown[] = [new Date(), /x/, new Map(), new Set()];
+  for (const entities of bads) {
+    t.notOk(
+      isImmutablePlugin({ name: 'p', entities } as unknown),
+      `rejects entities container: ${Object.prototype.toString.call(entities)}`
+    );
+  }
+  t.end();
+});
+
+test('isImmutablePlugins rejects record with undefined plugin value', (t) => {
+  t.notOk(
+    isImmutablePlugins({ p: undefined } as unknown),
+    'predicate rejects when a plugin value is undefined'
+  );
+  t.throws(
+    () =>
+      assertImmutablePlugins({ p: undefined } as unknown as Record<
+        string,
+        unknown
+      >),
+    /Invalid plugin structure/,
+    'assertion throws when a plugin value is undefined'
+  );
+  t.end();
+});
+
 test('requiredEntityTypes re-checks inner record shape on access', (t) => {
   // Construct entities with a getter that returns a valid record on first read
   // (during isEntitiesRecord) and an invalid value on second read (during
@@ -201,6 +229,10 @@ test('isEntitiesRecord / assertEntitiesRecord', (t) => {
 
   // Symbol-keyed entity type with invalid inner record to cover symbol branch
   const sym = Symbol('s');
+  t.notOk(
+    isEntitiesRecord({ [sym]: { '': 'x' } }),
+    'predicate rejects invalid inner on symbol key'
+  );
   t.throws(
     () => assertEntitiesRecord({ [sym]: { '': 'x' } }),
     /record of entity records/,

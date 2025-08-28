@@ -73,6 +73,20 @@ test('host options: symbol entity type required', (t) => {
   t.end();
 });
 
+test('host runtime validation smoke: throws on invalid plugin value', (t) => {
+  // Obvious invalid plugin value in the plugins record should be rejected
+  t.throws(
+    () =>
+      new ImmutableHost({ bad: undefined } as unknown as Record<
+        PluginURN,
+        TestPlugin
+      >),
+    /Invalid plugin structure for URN "bad"/,
+    'host delegates structural validation and throws'
+  );
+  t.end();
+});
+
 test('constructor with empty plugins', (t) => {
   const host = new ImmutableHost<TestPlugin>({});
 
@@ -771,253 +785,6 @@ test('large plugin set performance', (t) => {
     flatType0.length,
     250,
     'type-0 has 250 total entities (50 plugins * 5 keys)'
-  );
-
-  t.end();
-});
-
-test('plugin validation - invalid plugin structures', (t) => {
-  // Test null/undefined plugin
-  t.throws(
-    () =>
-      new ImmutableHost({ 'null-plugin': null } as unknown as Record<
-        PluginURN,
-        TestPlugin
-      >),
-    /Invalid plugin structure for URN "null-plugin"/,
-    'null plugin throws validation error'
-  );
-
-  t.throws(
-    () =>
-      new ImmutableHost({ 'undefined-plugin': undefined } as unknown as Record<
-        PluginURN,
-        TestPlugin
-      >),
-    /Invalid plugin structure for URN "undefined-plugin"/,
-    'undefined plugin throws validation error'
-  );
-
-  // Test non-object plugin
-  t.throws(
-    () =>
-      new ImmutableHost({
-        'string-plugin': 'not-an-object',
-      } as unknown as Record<PluginURN, TestPlugin>),
-    /Invalid plugin structure for URN "string-plugin"/,
-    'string plugin throws validation error'
-  );
-
-  // Test plugin missing name
-  t.throws(
-    () =>
-      new ImmutableHost({
-        'missing-name': { entities: {} },
-      } as unknown as Record<PluginURN, TestPlugin>),
-    /Invalid plugin structure for URN "missing-name"/,
-    'plugin missing name throws validation error'
-  );
-
-  // Test plugin missing entities
-  t.throws(
-    () =>
-      new ImmutableHost({
-        'missing-entities': { name: 'test' },
-      } as unknown as Record<PluginURN, TestPlugin>),
-    /Invalid plugin structure for URN "missing-entities"/,
-    'plugin missing entities throws validation error'
-  );
-
-  t.end();
-});
-
-test('plugin validation - invalid plugin names', (t) => {
-  // Test empty string name
-  t.throws(
-    () =>
-      new ImmutableHost({
-        'empty-name': { name: '', entities: {} },
-      } as unknown as Record<PluginURN, TestPlugin>),
-    /Invalid plugin structure for URN "empty-name"/,
-    'empty string name throws validation error'
-  );
-
-  // Test non-string name
-  t.throws(
-    () =>
-      new ImmutableHost({
-        'number-name': { name: 123, entities: {} },
-      } as unknown as Record<PluginURN, TestPlugin>),
-    /Invalid plugin structure for URN "number-name"/,
-    'number name throws validation error'
-  );
-
-  t.end();
-});
-
-test('plugin validation - invalid entities structure', (t) => {
-  // Test non-object entities
-  t.throws(
-    () =>
-      new ImmutableHost({
-        'array-entities': { name: 'test', entities: [] },
-      } as unknown as Record<PluginURN, TestPlugin>),
-    /Invalid plugin structure for URN "array-entities"/,
-    'array entities throws validation error'
-  );
-
-  // Test entities with Date object
-  t.throws(
-    () =>
-      new ImmutableHost({
-        'date-entities': { name: 'test', entities: new Date() },
-      } as unknown as Record<PluginURN, TestPlugin>),
-    /Invalid plugin structure for URN "date-entities"/,
-    'Date entities throws validation error'
-  );
-
-  // Test entities with RegExp object
-  t.throws(
-    () =>
-      new ImmutableHost({
-        'regexp-entities': { name: 'test', entities: /test/ },
-      } as unknown as Record<PluginURN, TestPlugin>),
-    /Invalid plugin structure for URN "regexp-entities"/,
-    'RegExp entities throws validation error'
-  );
-
-  // Test entities with Map object
-  t.throws(
-    () =>
-      new ImmutableHost({
-        'map-entities': { name: 'test', entities: new Map() },
-      } as unknown as Record<PluginURN, TestPlugin>),
-    /Invalid plugin structure for URN "map-entities"/,
-    'Map entities throws validation error'
-  );
-
-  // Test entities with Set object
-  t.throws(
-    () =>
-      new ImmutableHost({
-        'set-entities': { name: 'test', entities: new Set() },
-      } as unknown as Record<PluginURN, TestPlugin>),
-    /Invalid plugin structure for URN "set-entities"/,
-    'Set entities throws validation error'
-  );
-
-  t.end();
-});
-
-test('plugin validation - invalid entity types', (t) => {
-  // Test entity type that is not a record (string value)
-  t.throws(
-    () =>
-      new ImmutableHost({
-        'string-entity-type': {
-          name: 'test',
-          entities: { stringType: 'not-a-record' },
-        },
-      } as unknown as Record<PluginURN, TestPlugin>),
-    /Invalid plugin structure for URN "string-entity-type"/,
-    'string entity type throws validation error'
-  );
-
-  // Test entity type that is not a record (array value)
-  t.throws(
-    () =>
-      new ImmutableHost({
-        'array-entity-type': {
-          name: 'test',
-          entities: { arrayType: ['not', 'a', 'record'] },
-        },
-      } as unknown as Record<PluginURN, TestPlugin>),
-    /Invalid plugin structure for URN "array-entity-type"/,
-    'array entity type throws validation error'
-  );
-
-  // Test entity type with symbol key that is not a record
-  const symKey = Symbol('invalid');
-  t.throws(
-    () =>
-      new ImmutableHost({
-        'symbol-invalid-type': {
-          name: 'test',
-          entities: { [symKey]: 'not-a-record' },
-        },
-      } as unknown as Record<PluginURN, TestPlugin>),
-    /Invalid plugin structure for URN "symbol-invalid-type"/,
-    'symbol entity type with non-record throws validation error'
-  );
-
-  t.end();
-});
-
-test('plugin validation - forbid numeric entity keys and non-plain objects', (t) => {
-  // Numeric string key inside entity record
-  t.throws(
-    () =>
-      new ImmutableHost({
-        'numeric-string-key': {
-          name: 'test',
-          entities: { type: { '123': 'value' } },
-        },
-      } as unknown as Record<PluginURN, TestPlugin>),
-    /Invalid plugin structure for URN "numeric-string-key"/,
-    'numeric string entity key throws validation error'
-  );
-
-  // Numeric literal key inside entity record (becomes a string at runtime)
-  t.throws(
-    () =>
-      new ImmutableHost({
-        'numeric-literal-key': {
-          name: 'test',
-          entities: {
-            type: { 1: 'value' } as unknown as Record<PropertyKey, unknown>,
-          },
-        },
-      } as unknown as Record<PluginURN, TestPlugin>),
-    /Invalid plugin structure for URN "numeric-literal-key"/,
-    'numeric literal entity key throws validation error'
-  );
-
-  // Non-plain object as entity record
-  class Box {
-    // Ensures this is a non-plain instance
-    constructor(readonly value: unknown) {}
-  }
-
-  t.throws(
-    () =>
-      new ImmutableHost({
-        'non-plain-entity-record': {
-          name: 'test',
-          entities: { type: new Box('x') } as unknown as Record<
-            PropertyKey,
-            unknown
-          >,
-        },
-      } as unknown as Record<PluginURN, TestPlugin>),
-    /Invalid plugin structure for URN "non-plain-entity-record"/,
-    'non-plain object used as entity record is rejected'
-  );
-
-  t.end();
-});
-
-test('plugin validation - URN mismatch', (t) => {
-  // Test plugin name doesn't match URN
-  t.throws(
-    () =>
-      new ImmutableHost({
-        'urn-key': {
-          name: 'different-name',
-          entities: { type1: { key1: 'value1' } },
-        },
-      } as unknown as Record<PluginURN, TestPlugin>),
-    /Plugin name "different-name" does not match URN "urn-key"/,
-    'mismatched plugin name and URN throws validation error'
   );
 
   t.end();
