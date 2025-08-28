@@ -34,18 +34,18 @@
   "packageManager": "pnpm@10.13.1",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "pretest": "pnpm run lint",
+    "pretest": "pnpm -s run lint",
     "test": "tap",
     "lint:eslint": "eslint",
     "lint:prettier": "prettier --check .",
     "lint:tsc": "tsc --noEmit",
     "lint:markdownlint": "markdownlint --ignore '**/node_modules/**/*' '**/*.md'",
-    "lint": "pnpm run lint:tsc && pnpm run lint:eslint && pnpm run lint:prettier && pnpm run lint:markdownlint",
+    "lint": "pnpm -s run lint:tsc && pnpm -s run lint:eslint && pnpm -s run lint:prettier && pnpm -s run lint:markdownlint",
     "fix:eslint": "eslint --fix",
     "fix:prettier": "prettier --write .",
     "fix:markdownlint": "markdownlint --ignore '**/node_modules/**/*' --fix '**/*.md'",
-    "fix": "pnpm run fix:eslint && pnpm run fix:prettier && pnpm run fix:markdownlint",
-    "lefthook:precommit": "pnpm exec lefthook run pre-commit",
+    "fix": "pnpm -s run fix:eslint && pnpm -s run fix:prettier && pnpm -s run fix:markdownlint",
+    "lefthook:precommit": "pnpm -s exec lefthook run pre-commit",
     "link": "pnpm uninstall -g immutable-plugin-system || true && pnpm link --global \"$(pwd)\""
   },
   "devDependencies": {
