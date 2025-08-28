@@ -1,7 +1,7 @@
 # Specification: Immutable Plugin System
 
 - **Specification Version:** 1.1.0
-- **Document Revision:** 1.1.1
+- **Document Revision:** 1.1.2
 - **Status:** FINAL
 
 This document specifies a minimalist strongly typed immutable plugin system for
@@ -515,6 +515,7 @@ No external dependencies.
 ### Testing
 
 - tap
+- tsd
 
 ### Code Infrastructure
 
@@ -529,6 +530,10 @@ No external dependencies.
 - Cutting-edge `package.json` structure.
 
 ## Document Revision History
+
+### r1.1.2 / v1.1.0
+
+- Requiring tsd type tests.
 
 ### r1.1.1 / v1.1.0
 
