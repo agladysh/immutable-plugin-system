@@ -14,7 +14,7 @@
       test that checks if plugin does not provide a required type, it is not a
       valid plugin (works at runtime only if more than one plugin is provided,
       of course).
-- [ ] Migrate guard-adjascent tests (validation checks) to guards from tests for
+- [x] Migrate guard-adjascent tests (validation checks) to guards from tests for
       code that uses them. Control for redundancy and nuance: no test
       duplication, but all nuances covered.
 - [ ] Split `guards.ts` (and tests) to files in `guards/` by topic due to its
