@@ -1,1 +1,7 @@
-export const stub_delete_me = 42;
+export type {
+  ImmutableEntities,
+  ImmutableEntityCollection,
+  ImmutableHost,
+  ImmutablePlugin,
+  PluginURN,
+} from './types.js';

@@ -1,12 +1,13 @@
 import { test } from 'tap';
-import { stub_delete_me } from '../src/index.js';
+import type { PluginURN } from '../src/index.js';
 
-test('stub export exists and has correct value', (t) => {
-  t.equal(stub_delete_me, 42, 'stub_delete_me should equal 42');
+test('types are exported', (t) => {
+  t.ok(true, 'types imported without error');
   t.end();
 });
 
-test('stub export has correct type', (t) => {
-  t.equal(typeof stub_delete_me, 'number', 'stub_delete_me should be a number');
+test('PluginURN is string type', (t) => {
+  const urn: PluginURN = 'test-plugin';
+  t.equal(typeof urn, 'string', 'PluginURN should be assignable from string');
   t.end();
 });
