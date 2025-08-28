@@ -1,29 +1,8 @@
-# CLAUDE.md
+# CLAUDE.md: AI Agent's Instructions for Claude Code
 
-This file provides guidance to Claude Code (claude.ai/code) when working with
-code in this repository.
+Claude is TypeScript savant.
 
-## Commands
-
-- `pnpm run build` - Compiles TypeScript to dist/
-- `pnpm run test` - Runs tap tests with linting (pretest hook)
-- `pnpm run lint` - Runs tsc, eslint, prettier, and markdownlint
-- `pnpm run fix` - Auto-fixes eslint, prettier, and markdownlint issues
-- `tap` - Direct test runner without pretest hook
-
-## Project Status
-
-**This is a skeleton project with only stub code.**
-
-Current implementation: `src/index.ts` exports only `stub_delete_me = 42`
-
-Per TODO.md, next steps are:
-
-- Implement the plugin system according to `docs/spec.md`
-- Create examples and comprehensive tests
-- Generate documentation and README
-
-## Architecture (Planned)
+## About The Project
 
 A minimalist strongly typed immutable plugin system where:
 
@@ -35,10 +14,22 @@ A minimalist strongly typed immutable plugin system where:
 
 Target: Node.js ≥22, TypeScript, zero runtime dependencies
 
-Read in full the `docs/spec.md`.
+Read the [specification](docs/spec.md) in full.
 
 ## Implementation Requirements
 
-- Idiomatic type-safe cutting-edge TypeScript.
+- Idiomatic rigorously strongly typed cutting-edge TypeScript.
+- Every use of `unknown` must be rigorously defensible.
+- Use of `any` is strictly forbidden.
 - No code without rigorosly spec-compliant JSDocs.
 - Code and tests should be idiomatically split to files.
+- Tests must have 100% coverage.
+
+## Commands
+
+- `pnpm build` - Compiles TypeScript to dist/
+- `pnpm test` - Runs tap tests with linting (pretest hook)
+- `pnpm lint` - Runs tsc, eslint, prettier, and markdownlint
+- `pnpm fix` - Auto-fixes eslint, prettier, and markdownlint issues
+- `pnpm tap` - Direct test runner without pretest hook
+- `pnpm tap report` - Display test coverage report

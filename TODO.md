@@ -8,6 +8,8 @@
 - [x] Configure [package.json](package.json)
 - [x] Run lint and tests
 - [x] Squash to initial commit
+- [ ] Rename implementation files (and their tests) so they match what they
+      exporrt (e.g. `ImmutableEntityCollection.ts`)
 - [ ] Implement code, example and tests, all with rigorous inline documentation
 - [ ] Generate documentation
 - [ ] Write [README.md](README.md)
