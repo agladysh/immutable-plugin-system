@@ -1,6 +1,6 @@
 import { test } from 'tap';
-import { ImmutableHost } from '../src/host.js';
-import type { ImmutableEntityCollection } from '../src/collection.js';
+import { ImmutableHost } from '../src/ImmutableHost.js';
+import type { ImmutableEntityCollection } from '../src/ImmutableEntityCollection.js';
 import type {
   ImmutableEntities,
   ImmutableEntityKey,

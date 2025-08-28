@@ -1,5 +1,5 @@
 import { test } from 'tap';
-import { ImmutableEntityCollection } from '../src/collection.js';
+import { ImmutableEntityCollection } from '../src/ImmutableEntityCollection.js';
 import type { ImmutableEntitiesRecord } from '../src/types.js';
 import type { PluginURN } from '../src/types.js';
 

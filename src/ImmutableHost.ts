@@ -6,7 +6,7 @@ import type {
   ImmutablePlugins,
   PluginURN,
 } from './types.js';
-import { ImmutableEntityCollection } from './collection.js';
+import { ImmutableEntityCollection } from './ImmutableEntityCollection.js';
 import { assertImmutablePlugins } from './guards/plugins.js';
 import { isEntityRecord } from './guards/entity-record.js';
 

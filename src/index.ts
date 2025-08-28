@@ -7,8 +7,8 @@ export type {
   ImmutableEntitiesRecord,
 } from './types.js';
 
-export { ImmutableEntityCollection } from './collection.js';
-export { ImmutableHost } from './host.js';
+export { ImmutableEntityCollection } from './ImmutableEntityCollection.js';
+export { ImmutableHost } from './ImmutableHost.js';
 export { isPlainObject, assertPlainObject } from './guards/plain-object.js';
 export { isEntityRecord, assertEntityRecord } from './guards/entity-record.js';
 export {
