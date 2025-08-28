@@ -1,0 +1,63 @@
+{
+  "name": "immutable-plugin-system",
+  "version": "0.1.0",
+  "description": "A minimalist strongly typed immutable plugin system for Node.js",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "keywords": [
+    "plugin",
+    "plugin-system",
+    "immutable",
+    "typescript",
+    "host",
+    "entities",
+    "type-safe",
+    "strongly-typed",
+    "minimalist",
+    "nodejs"
+  ],
+  "author": "Alexander Gladysh <agladysh@gmail.com>",
+  "license": "MIT",
+  "packageManager": "pnpm@10.13.1",
+  "scripts": {
+    "build": "tsc",
+    "pretest": "pnpm run lint",
+    "test": "tap",
+    "lint:eslint": "eslint",
+    "lint:prettier": "prettier --check .",
+    "lint:tsc": "tsc --noEmit",
+    "lint:markdownlint": "markdownlint --ignore '**/node_modules/**/*' '**/*.md'",
+    "lint": "pnpm run lint:tsc && pnpm run lint:eslint && pnpm run lint:prettier && pnpm run lint:markdownlint",
+    "fix:eslint": "eslint --fix",
+    "fix:prettier": "prettier --write .",
+    "fix:markdownlint": "markdownlint --ignore '**/node_modules/**/*' --fix '**/*.md'",
+    "fix": "pnpm run fix:eslint && pnpm run fix:prettier && pnpm run fix:markdownlint",
+    "lefthook:precommit": "pnpm exec lefthook run pre-commit",
+    "link": "pnpm uninstall -g immutable-plugin-system || true && pnpm link --global \"$(pwd)\""
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.34.0",
+    "eslint": "^9.34.0",
+    "globals": "^16.3.0",
+    "lefthook": "^1.12.3",
+    "markdownlint-cli": "^0.45.0",
+    "prettier": "^3.6.2",
+    "tap": "^21.1.0",
+    "tsc-files": "^1.1.4",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.40.0"
+  }
+}

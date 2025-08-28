@@ -1,0 +1,9 @@
+LICENSE
+pnpm-lock.yaml
+.editorconfig
+.env.example
+.gitignore
+.markdownlintignore
+.npmrc
+.prettierignore
+*.txt
