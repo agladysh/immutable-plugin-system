@@ -13,5 +13,9 @@ pre-commit:
     tsc:
       exclude:
         - 'eslint.config.mjs'
+        - 'test-d/**'
       glob: '*.{ts,tsx,cts,mts,mts}' # tsc-files does not support JS files
       run: pnpm exec tsc-files --noEmit {staged_files} # We run tsc-files because plain tsc ignores config when fed file list
+    tsd:
+      glob: '{src,test-d}/**/*.ts'
+      run: pnpm -s run test:tsd

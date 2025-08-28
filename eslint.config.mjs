@@ -47,6 +47,13 @@ export default tseslint.config(
     },
   },
   {
+    files: ['test-d/**/*.ts'],
+    languageOptions: {
+      // Do not require TS project for tsd tests; lint syntactically only
+      parserOptions: { projectService: false },
+    },
+  },
+  {
     files: ['**/*.cjs'],
     languageOptions: {
       globals: globals.node,

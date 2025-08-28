@@ -33,12 +33,20 @@ Read the [specification](docs/spec.md) in full.
 
 ## Commands
 
-- `pnpm -s build` - Compiles TypeScript to dist/
-- `pnpm -s test` - Runs tap tests with linting (via pretest hook)
+- `pnpm -s build` - Compiles TypeScript to `dist/`
+- `pnpm -s test` - Runs tap tests after linting
+- `pnpm -s test:fix` - Runs tap tests after attempting to fix lint errors
 - `pnpm -s lint` - Runs tsc, eslint, prettier, and markdownlint
 - `pnpm -s fix` - Auto-fixes eslint, prettier, and markdownlint issues
 - `pnpm -s tap` - Direct test runner without pretest hook
 - `pnpm -s tap report` - Display test coverage report for the last test run
+- `pnpm -s lefthook:precommit` - Manually run the pre-commit hook
+
+Notes:
+
+- During active development use `pnpm -s test:fix` for speed and clarity.
+- If `pnpm -s test:fix` passes, `pnpm -s lint` will pass as well.
+- Pre-commit hook is equivalent to `pnpm -s lint`.
 
 ## Environment
 
