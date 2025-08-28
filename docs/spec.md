@@ -1,7 +1,7 @@
 # Specification: Immutable Plugin System
 
 - **Specification Version:** 1.0.0
-- **Document Revision:** 1.0.0
+- **Document Revision:** 1.0.1
 - **Status:** FINAL
 
 This document specifies a minimalist strongly typed immutable plugin system for
@@ -97,7 +97,7 @@ type ImmutableEntityCollections<
   K extends PropertyKey,
   T extends { [k in K]: unknown },
 > = {
-  [k in K]: ImmutableEntityCollection<k, T[k]>;
+  [k in K]: ImmutableEntityCollection<keyof T[k], T[k][keyof T[k]]>;;
 };
 
 type ImmutableEntityCollectionsFromPlugin<P extends ImmutablePlugin> =
@@ -399,3 +399,19 @@ No external dependencies.
 
 - Single package repository
 - Cutting-edge `package.json` structure.
+
+## Document Revision History
+
+### r1.0.1 / v1.0.0
+
+- Fixed `ImmutableEntityCollections` type to remove accidental type coupling of
+  entities record keys and keys of its nested object
+
+  ```diff
+  - [k in K]: ImmutableEntityCollection<k, T[k]>;
+  + [k in K]: ImmutableEntityCollection<keyof T[k], T[k][keyof T[k]]>
+  ```
+
+### r1.0.0 / v1.0.0
+
+- Initial revision
