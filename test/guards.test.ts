@@ -1,8 +1,14 @@
 import { test } from 'tap';
 import {
+  assertImmutablePlugin,
   assertImmutablePlugins,
+  assertEntitiesRecord,
+  assertEntityRecord,
+  assertPlainObject,
+  isEntitiesRecord,
   isEntityRecord,
   isImmutablePlugin,
+  isImmutablePlugins,
   isPlainObject,
 } from '../src/guards.js';
 import type { ImmutablePlugin } from '../src/types.js';
@@ -34,13 +40,60 @@ test('isPlainObject - accepts only plain objects', (t) => {
 
   t.end();
 });
+test('assertPlainObject - assertion variant', (t) => {
+  t.doesNotThrow(() => assertPlainObject({}), 'accepts object');
+  t.throws(
+    () => assertPlainObject(1 as unknown),
+    /plain object/,
+    'rejects non-object'
+  );
+  t.end();
+});
+
+test('isEntitiesRecord / assertEntitiesRecord', (t) => {
+  t.ok(isEntitiesRecord({ ok: { a: 1 } }), 'predicate accepts valid record');
+  t.notOk(isEntitiesRecord('nope'), 'predicate rejects non-object');
+  t.notOk(isEntitiesRecord({ bad: 'x' }), 'predicate rejects non-record');
+  t.notOk(
+    isEntitiesRecord({ bad: { '': 'x' } }),
+    'predicate rejects invalid inner'
+  );
+
+  t.doesNotThrow(
+    () => assertEntitiesRecord({ ok: { a: 1 } }),
+    'assertion accepts valid record'
+  );
+  t.throws(
+    () => assertEntitiesRecord('nope'),
+    /plain object/,
+    'assertion rejects non-object'
+  );
+  t.throws(
+    () => assertEntitiesRecord({ bad: 'x' }),
+    /record of entity records/,
+    'assertion rejects non-record'
+  );
+  t.throws(
+    () => assertEntitiesRecord({ bad: { '': 'x' } }),
+    /record of entity records/,
+    'assertion rejects invalid inner'
+  );
+
+  // Symbol-keyed entity type with invalid inner record to cover symbol branch
+  const sym = Symbol('s');
+  t.throws(
+    () => assertEntitiesRecord({ [sym]: { '': 'x' } }),
+    /record of entity records/,
+    'assertion rejects invalid inner on symbol key'
+  );
+
+  t.end();
+});
 
 test('isImmutablePlugin - validates full plugin structure', (t) => {
   const symType = Symbol('sym');
 
-  const good: ImmutablePlugin<
-    Record<PropertyKey, Record<PropertyKey, unknown>>
-  > = {
+  const good: ImmutablePlugin = {
     name: 'good-plugin',
     entities: {
       strType: { a: 1 },
@@ -94,11 +147,32 @@ test('isImmutablePlugin - validates full plugin structure', (t) => {
 
   t.end();
 });
+test('assertImmutablePlugin / isImmutablePlugins', (t) => {
+  const good = { name: 'p', entities: { t: { a: 1 } } };
+  t.doesNotThrow(() => assertImmutablePlugin(good), 'assert single plugin');
+  t.ok(isImmutablePlugins({ p: good }), 'predicate for plugins record');
+  t.notOk(
+    isImmutablePlugins({ p: { name: '', entities: {} } }),
+    'predicate fails invalid'
+  );
+  t.notOk(
+    isImmutablePlugins({ p: { name: 'different', entities: { t: { a: 1 } } } }),
+    'predicate fails on URN/name mismatch'
+  );
+  t.notOk(
+    isImmutablePlugins('nope' as unknown),
+    'predicate rejects non-object'
+  );
+  t.throws(
+    () => assertImmutablePlugin({ name: '', entities: {} }),
+    /Invalid plugin structure/,
+    'assert single plugin throws on invalid'
+  );
+  t.end();
+});
 
 test('assertImmutablePlugins - asserts and checks URN match', (t) => {
-  const validPlugin: ImmutablePlugin<
-    Record<PropertyKey, Record<PropertyKey, unknown>>
-  > = {
+  const validPlugin: ImmutablePlugin = {
     name: 'plugin-a',
     entities: { type: { k: 'v' } },
   };
@@ -109,9 +183,7 @@ test('assertImmutablePlugins - asserts and checks URN match', (t) => {
   );
 
   // Mismatch URN
-  const mismatch: ImmutablePlugin<
-    Record<PropertyKey, Record<PropertyKey, unknown>>
-  > = {
+  const mismatch: ImmutablePlugin = {
     name: 'different',
     entities: { type: { k: 'v' } },
   };
@@ -165,6 +237,13 @@ test('isEntityRecord - rejects numeric keys, allows symbols and non-numeric stri
   t.ok(
     isPlainObject({ 1: 'x' }),
     'plain object with numeric key accepted by isPlainObject'
+  );
+
+  // Assertion variant coverage: invalid entity record
+  t.throws(
+    () => assertEntityRecord({ '': 1 }),
+    /entity record must be a plain object/,
+    'assertEntityRecord rejects invalid keys'
   );
 
   t.end();

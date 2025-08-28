@@ -1,4 +1,11 @@
-import type { ImmutablePlugin, ImmutablePlugins, PluginURN } from './types.js';
+import type {
+  ImmutableEntities,
+  ImmutableEntityKey,
+  ImmutableEntitiesRecord,
+  ImmutablePlugin,
+  ImmutablePlugins,
+  PluginURN,
+} from './types.js';
 import { ImmutableEntityCollection } from './collection.js';
 import { assertImmutablePlugins, isEntityRecord } from './guards.js';
 
@@ -16,9 +23,12 @@ import { assertImmutablePlugins, isEntityRecord } from './guards.js';
  */
 type ImmutableEntityCollections<
   K extends PropertyKey,
-  T extends { [k in K]: Record<Exclude<PropertyKey, number>, unknown> },
+  T extends { [k in K]: ImmutableEntitiesRecord[PropertyKey] },
 > = {
-  [k in K]: ImmutableEntityCollection<keyof T[k], T[k][keyof T[k]]>;
+  [k in K]: ImmutableEntityCollection<
+    Extract<keyof T[k], ImmutableEntityKey>,
+    T[k][keyof T[k]]
+  >;
 };
 
 /**
@@ -28,9 +38,7 @@ type ImmutableEntityCollections<
  * @template P - The plugin type, must extend ImmutablePlugin
  */
 type ImmutableEntityCollectionsFromPlugin<
-  P extends ImmutablePlugin<
-    Record<PropertyKey, Record<Exclude<PropertyKey, number>, unknown>>
-  >,
+  P extends ImmutablePlugin<ImmutableEntitiesRecord>,
 > = ImmutableEntityCollections<keyof P['entities'], P['entities']>;
 
 /**
@@ -40,11 +48,7 @@ type ImmutableEntityCollectionsFromPlugin<
  *
  * @template P - The plugin type, must extend ImmutablePlugin
  */
-export class ImmutableHost<
-  P extends ImmutablePlugin<
-    Record<PropertyKey, Record<Exclude<PropertyKey, number>, unknown>>
-  >,
-> {
+export class ImmutableHost<P extends ImmutablePlugin<ImmutableEntitiesRecord>> {
   /**
    * All plugins managed by this host, indexed by their URNs.
    */
@@ -69,37 +73,47 @@ export class ImmutableHost<
     this.plugins = { ...plugins };
 
     // Build entity collections by grouping entities from all plugins by type
-    const entityCollections = {} as Record<PropertyKey, unknown>;
+    const entityCollections: Partial<ImmutableEntityCollectionsFromPlugin<P>> =
+      {};
 
     // Get all unique entity type names across all plugins using efficient key iteration
-    const allEntityTypes = new Set<PropertyKey>();
+    const allEntityTypes = new Set<keyof P['entities']>();
     for (const plugin of Object.values(plugins)) {
-      // Use Reflect.ownKeys for efficient iteration over all property keys (strings, numbers, symbols)
-      for (const entityType of Reflect.ownKeys(plugin.entities)) {
+      // Use Reflect.ownKeys to include symbol keys and coerce to declared key type
+      for (const entityType of Reflect.ownKeys(plugin.entities) as Array<
+        keyof P['entities']
+      >) {
         allEntityTypes.add(entityType);
       }
     }
 
     // For each entity type, create a collection with entities from all plugins
     for (const entityType of allEntityTypes) {
-      const pluginEntitiesForType: Record<
+      // Infer inner key/value types from the plugin's declaration for this entity type
+      type ET = typeof entityType;
+      type EntitiesMap = P['entities'][ET];
+      type KType = Extract<keyof EntitiesMap, ImmutableEntityKey>;
+      type VType = EntitiesMap[keyof EntitiesMap];
+
+      const pluginEntitiesForType = {} as Record<
         PluginURN,
-        Record<PropertyKey, unknown>
-      > = {};
+        ImmutableEntities<KType, VType>
+      >;
 
       // Collect entities of this type from all plugins
       for (const [pluginURN, plugin] of Object.entries(plugins)) {
         const entitiesOfType = plugin.entities[entityType];
         if (entitiesOfType != null && isEntityRecord(entitiesOfType)) {
-          // Type-safe assignment after runtime validation
-          pluginEntitiesForType[pluginURN] = entitiesOfType;
+          pluginEntitiesForType[pluginURN] =
+            entitiesOfType as ImmutableEntities<KType, VType>;
         }
       }
 
       // Create entity collection for this entity type
-      entityCollections[entityType] = new ImmutableEntityCollection(
-        pluginEntitiesForType
-      );
+      entityCollections[entityType] = new ImmutableEntityCollection<
+        KType,
+        VType
+      >(pluginEntitiesForType);
     }
 
     // Safe assignment: entityCollections structure matches expected type

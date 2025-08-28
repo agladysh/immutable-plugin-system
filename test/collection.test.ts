@@ -1,5 +1,6 @@
 import { test } from 'tap';
 import { ImmutableEntityCollection } from '../src/collection.js';
+import type { ImmutableEntitiesRecord } from '../src/types.js';
 import type { PluginURN } from '../src/types.js';
 
 test('ImmutableEntityCollection can be instantiated', (t) => {
@@ -20,7 +21,7 @@ test('constructor with empty plugins', (t) => {
 });
 
 test('constructor with single plugin', (t) => {
-  const pluginEntities: Record<string, Record<string, string>> = {
+  const pluginEntities: ImmutableEntitiesRecord<string, string> = {
     'plugin-a': {
       key1: 'value1',
       key2: 'value2',
@@ -40,7 +41,7 @@ test('constructor with single plugin', (t) => {
 });
 
 test('constructor with multiple plugins and different value types', (t) => {
-  const pluginEntities: Record<string, Record<string, number | string>> = {
+  const pluginEntities: ImmutableEntitiesRecord<string, number | string> = {
     'plugin-a': {
       shared: 42,
       'unique-a': 'text-value',
@@ -71,7 +72,7 @@ test('constructor with multiple plugins and different value types', (t) => {
 });
 
 test('get method edge cases', (t) => {
-  const pluginEntities: Record<string, Record<string, string>> = {
+  const pluginEntities: ImmutableEntitiesRecord<string, string> = {
     'plugin-a': {
       key1: 'value1',
     },
@@ -93,7 +94,7 @@ test('get method edge cases', (t) => {
 });
 
 test('entries method', (t) => {
-  const pluginEntities: Record<string, Record<string, string>> = {
+  const pluginEntities: ImmutableEntitiesRecord<string, string> = {
     'plugin-a': {
       key1: 'value1',
       key2: 'value2',
@@ -132,7 +133,7 @@ test('entries method with empty collection', (t) => {
 });
 
 test('flat method', (t) => {
-  const pluginEntities: Record<string, Record<string, string>> = {
+  const pluginEntities: ImmutableEntitiesRecord<string, string> = {
     'plugin-a': {
       key1: 'value1',
       key2: 'value2',
@@ -171,7 +172,7 @@ test('flat method with empty collection', (t) => {
 });
 
 test('map method', (t) => {
-  const pluginEntities: Record<string, Record<string, string>> = {
+  const pluginEntities: ImmutableEntitiesRecord<string, string> = {
     'plugin-a': {
       key1: 'value1',
       key2: 'value2',
@@ -190,7 +191,7 @@ test('map method', (t) => {
 });
 
 test('map method with transformation', (t) => {
-  const pluginEntities: Record<string, Record<string, number>> = {
+  const pluginEntities: ImmutableEntitiesRecord<string, number> = {
     'plugin-a': {
       numbers: 1,
       letters: 2,
@@ -212,7 +213,7 @@ test('map method with transformation', (t) => {
 });
 
 test('flatMap method', (t) => {
-  const pluginEntities: Record<string, Record<string, string>> = {
+  const pluginEntities: ImmutableEntitiesRecord<string, string> = {
     'plugin-a': {
       key1: 'value1',
       key2: 'value2',
@@ -244,7 +245,7 @@ test('flatMap method', (t) => {
 });
 
 test('flatMap method with simple transformation', (t) => {
-  const pluginEntities: Record<string, Record<string, string>> = {
+  const pluginEntities: ImmutableEntitiesRecord<string, string> = {
     'plugin-a': {
       key1: 'abc',
     },
@@ -263,7 +264,7 @@ test('flatMap method with simple transformation', (t) => {
 });
 
 test('Symbol.iterator method', (t) => {
-  const pluginEntities: Record<string, Record<string, string>> = {
+  const pluginEntities: ImmutableEntitiesRecord<string, string> = {
     'plugin-a': {
       key1: 'value1',
       key2: 'value2',
@@ -290,7 +291,7 @@ test('Symbol.iterator method', (t) => {
 });
 
 test('Symbol.iterator with for...of loop', (t) => {
-  const pluginEntities: Record<string, Record<string, string>> = {
+  const pluginEntities: ImmutableEntitiesRecord<string, string> = {
     'plugin-a': {
       key1: 'value1',
     },
@@ -360,7 +361,7 @@ test('type safety with different entity types', (t) => {
     name: string;
   }
 
-  const pluginEntities: Record<string, Record<string, TestEntity>> = {
+  const pluginEntities: ImmutableEntitiesRecord<string, TestEntity> = {
     'plugin-objects': {
       entity1: { id: 1, name: 'first' },
       entity2: { id: 2, name: 'second' },
@@ -379,7 +380,7 @@ test('type safety with different entity types', (t) => {
 });
 
 test('immutability of returned arrays', (t) => {
-  const pluginEntities: Record<string, Record<string, string>> = {
+  const pluginEntities: ImmutableEntitiesRecord<string, string> = {
     'plugin-a': {
       key1: 'value1',
     },
@@ -408,7 +409,7 @@ test('Symbol keys support', (t) => {
   const symKey2 = Symbol('command2');
   const sharedSym = Symbol('shared');
 
-  const pluginEntities: Record<string, Record<symbol, string | number>> = {
+  const pluginEntities: ImmutableEntitiesRecord<symbol, string | number> = {
     'plugin-a': {
       [symKey1]: 'command-a',
       [sharedSym]: 42,
@@ -521,7 +522,7 @@ test('large dataset performance', (t) => {
 });
 
 test('empty plugin entities', (t) => {
-  const pluginEntities: Record<string, Record<string, string>> = {
+  const pluginEntities: ImmutableEntitiesRecord<string, string> = {
     'plugin-empty': {},
     'plugin-with-data': {
       key1: 'value1',

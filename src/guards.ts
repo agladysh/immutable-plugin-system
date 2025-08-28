@@ -1,4 +1,9 @@
-import type { ImmutablePlugin, PluginURN } from './types.js';
+import type {
+  ImmutableEntityKey,
+  ImmutableEntitiesRecord,
+  ImmutablePlugin,
+  PluginURN,
+} from './types.js';
 
 /**
  * Plain-object guard used for container validation.
@@ -23,6 +28,19 @@ export function isPlainObject(
   const proto = Object.getPrototypeOf(value as object);
   const isPlain = proto === Object.prototype || proto === null;
   return isPlain;
+}
+
+/**
+ * Assertion variant of isPlainObject that throws on failure.
+ * @param value - Candidate value
+ * @throws TypeError if value is not a plain object
+ */
+export function assertPlainObject(
+  value: unknown
+): asserts value is Record<PropertyKey, unknown> {
+  if (!isPlainObject(value)) {
+    throw new TypeError('value must be a plain object');
+  }
 }
 
 /**
@@ -69,8 +87,73 @@ function hasNoInvalidKeys(obj: object): boolean {
  */
 export function isEntityRecord(
   value: unknown
-): value is Record<Exclude<PropertyKey, number>, unknown> {
+): value is Record<ImmutableEntityKey, unknown> {
   return isPlainObject(value) && hasNoInvalidKeys(value as object);
+}
+
+/**
+ * Assertion variant of isEntityRecord that throws on failure.
+ * @param value - Candidate value
+ * @throws TypeError if value is not a valid entity record
+ */
+export function assertEntityRecord(
+  value: unknown
+): asserts value is Record<ImmutableEntityKey, unknown> {
+  if (!isEntityRecord(value)) {
+    throw new TypeError(
+      'entity record must be a plain object with symbol or non-empty, non-numeric string keys'
+    );
+  }
+}
+
+/**
+ * Predicate that checks whether a value is an `ImmutableEntitiesRecord`.
+ * Value must be a plain object where each own property value is a valid inner
+ * entity record.
+ */
+export function isEntitiesRecord(
+  value: unknown
+): value is ImmutableEntitiesRecord {
+  if (!isPlainObject(value)) {
+    return false;
+  }
+  const entities = value as Record<PropertyKey, unknown>;
+  for (const key of Object.keys(entities)) {
+    if (!isEntityRecord(entities[key])) {
+      return false;
+    }
+  }
+  for (const key of Object.getOwnPropertySymbols(entities)) {
+    if (!isEntityRecord(entities[key])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * Assertion variant of `isEntitiesRecord` that throws on failure.
+ *
+ * @param value - Runtime candidate for entities record
+ * @throws TypeError if validation fails
+ */
+export function assertEntitiesRecord(
+  value: unknown
+): asserts value is ImmutableEntitiesRecord {
+  if (!isPlainObject(value)) {
+    throw new TypeError('entities must be a plain object');
+  }
+  const entities = value as Record<PropertyKey, unknown>;
+  for (const key of Object.keys(entities)) {
+    if (!isEntityRecord(entities[key])) {
+      throw new TypeError('entities must be a record of entity records');
+    }
+  }
+  for (const key of Object.getOwnPropertySymbols(entities)) {
+    if (!isEntityRecord(entities[key])) {
+      throw new TypeError('entities must be a record of entity records');
+    }
+  }
 }
 
 /**
@@ -86,9 +169,7 @@ export function isEntityRecord(
  */
 export function isImmutablePlugin(
   plugin: unknown
-): plugin is ImmutablePlugin<
-  Record<PropertyKey, Record<Exclude<PropertyKey, number>, unknown>>
-> {
+): plugin is ImmutablePlugin<ImmutableEntitiesRecord> {
   if (
     !plugin ||
     typeof plugin !== 'object' ||
@@ -102,22 +183,42 @@ export function isImmutablePlugin(
   if (typeof p.name !== 'string' || p.name.length === 0) {
     return false;
   }
-  if (!isPlainObject(p.entities)) {
+  return isPlainObject(p.entities) && isEntitiesRecord(p.entities);
+}
+
+/**
+ * Predicate that checks if a value is a record of immutable plugins keyed by URN
+ * and each plugin's `name` matches its key.
+ */
+export function isImmutablePlugins(
+  plugins: unknown
+): plugins is Record<PluginURN, ImmutablePlugin<ImmutableEntitiesRecord>> {
+  if (!isPlainObject(plugins)) {
     return false;
   }
-
-  const entities = p.entities as Record<PropertyKey, unknown>;
-  for (const key of Object.keys(entities)) {
-    if (!isEntityRecord(entities[key])) {
+  for (const [urn, plugin] of Object.entries(plugins)) {
+    if (!isImmutablePlugin(plugin)) {
       return false;
     }
-  }
-  for (const key of Object.getOwnPropertySymbols(entities)) {
-    if (!isEntityRecord(entities[key])) {
+    if (plugin.name !== urn) {
       return false;
     }
   }
   return true;
+}
+
+/**
+ * Assertion over a single plugin. Structural validation only; does not check
+ * any particular URN association.
+ */
+export function assertImmutablePlugin(
+  plugin: unknown
+): asserts plugin is ImmutablePlugin<ImmutableEntitiesRecord> {
+  if (!isImmutablePlugin(plugin)) {
+    throw new TypeError(
+      "Invalid plugin structure: plugin must have 'name' (non-empty string) and 'entities' (record of records)"
+    );
+  }
 }
 
 /**
@@ -131,9 +232,7 @@ export function assertImmutablePlugins(
   plugins: Record<PluginURN, unknown>
 ): asserts plugins is Record<
   PluginURN,
-  ImmutablePlugin<
-    Record<PropertyKey, Record<Exclude<PropertyKey, number>, unknown>>
-  >
+  ImmutablePlugin<ImmutableEntitiesRecord>
 > {
   for (const [urn, plugin] of Object.entries(plugins)) {
     if (!isImmutablePlugin(plugin)) {

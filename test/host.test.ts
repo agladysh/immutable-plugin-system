@@ -1,13 +1,14 @@
 import { test } from 'tap';
 import { ImmutableHost } from '../src/host.js';
 import type { ImmutableEntityCollection } from '../src/collection.js';
-import type { ImmutablePlugin, PluginURN } from '../src/types.js';
+import type {
+  ImmutableEntityKey,
+  ImmutablePlugin,
+  PluginURN,
+} from '../src/types.js';
 
 // Test plugins following specification patterns
-interface TestPlugin
-  extends ImmutablePlugin<
-    Record<PropertyKey, Record<Exclude<PropertyKey, number>, unknown>>
-  > {
+interface TestPlugin extends ImmutablePlugin {
   description?: string;
 }
 
@@ -264,7 +265,7 @@ test('Symbol entity type support', (t) => {
   t.equal(
     (
       host.entities[symbolType] as ImmutableEntityCollection<
-        PropertyKey,
+        ImmutableEntityKey,
         unknown
       >
     ).get('symKey1')[0],
@@ -274,7 +275,7 @@ test('Symbol entity type support', (t) => {
   t.equal(
     (
       host.entities[anotherSymbol] as ImmutableEntityCollection<
-        PropertyKey,
+        ImmutableEntityKey,
         unknown
       >
     ).get('anotherKey')[0],
@@ -554,7 +555,10 @@ test('immutability - plugins object isolation', (t) => {
 
   // Modify original plugin object after host creation
   (
-    originalPlugin.entities as Record<PropertyKey, Record<PropertyKey, unknown>>
+    originalPlugin.entities as unknown as Record<
+      string,
+      Record<string, unknown>
+    >
   ).items['key2'] = 'added-after-host-creation';
   (pluginsCopy as Record<PropertyKey, TestPlugin>)['new-plugin'] = {
     name: 'new-plugin',

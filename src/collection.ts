@@ -1,4 +1,8 @@
-import type { PluginURN } from './types.js';
+import type {
+  ImmutableEntities,
+  ImmutableEntityKey,
+  PluginURN,
+} from './types.js';
 
 /**
  * Internal storage item that tracks an entity with its source plugin.
@@ -25,7 +29,7 @@ interface EntityWithPlugin<E> {
  * @template K - The key type, must extend PropertyKey
  * @template E - The entity type
  */
-export class ImmutableEntityCollection<K extends PropertyKey, E> {
+export class ImmutableEntityCollection<K extends ImmutableEntityKey, E> {
   /**
    * Internal storage mapping keys to arrays of entities with their plugin URNs.
    */
@@ -36,7 +40,7 @@ export class ImmutableEntityCollection<K extends PropertyKey, E> {
    *
    * @param pluginEntities - Record of plugin URN to entities for that plugin
    */
-  constructor(pluginEntities: Record<PluginURN, Record<K, E>>) {
+  constructor(pluginEntities: Record<PluginURN, ImmutableEntities<K, E>>) {
     for (const [pluginURN, entities] of Object.entries(pluginEntities)) {
       // Iterate all own keys (string, number-as-string, symbol) exactly once
       for (const key of Reflect.ownKeys(entities) as K[]) {
