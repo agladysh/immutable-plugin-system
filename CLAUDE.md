@@ -26,13 +26,14 @@ Read the [specification](docs/spec.md) in full.
 - No code without rigorosly spec-compliant JSDocs.
 - Code and tests should be idiomatically split to files.
 - Tests must have 100% coverage.
-- Use verbose conventional commit messages
+- Run `pnpm -s test` before delivering your code or test changes to the user.
+- Use verbose conventional commit messages.
 
 ## Commands
 
 - `pnpm -s build` - Compiles TypeScript to dist/
-- `pnpm -s test` - Runs tap tests with linting (pretest hook)
+- `pnpm -s test` - Runs tap tests with linting (via pretest hook)
 - `pnpm -s lint` - Runs tsc, eslint, prettier, and markdownlint
 - `pnpm -s fix` - Auto-fixes eslint, prettier, and markdownlint issues
 - `pnpm -s tap` - Direct test runner without pretest hook
-- `pnpm -s tap report` - Display test coverage report
+- `pnpm -s tap report` - Display test coverage report for the last test run
