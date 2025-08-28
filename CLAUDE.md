@@ -34,3 +34,11 @@ A minimalist strongly typed immutable plugin system where:
 - No runtime modifications allowed - everything is immutable by design
 
 Target: Node.js ≥22, TypeScript, zero runtime dependencies
+
+Read in full the `docs/spec.md`.
+
+## Implementation Requirements
+
+- Idiomatic type-safe cutting-edge TypeScript.
+- No code without rigorosly spec-compliant JSDocs.
+- Code and tests should be idiomatically split to files.

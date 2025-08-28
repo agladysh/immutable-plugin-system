@@ -9,8 +9,9 @@
 - [x] Run lint and tests
 - [x] Squash to initial commit
 - [ ] Implement code, example and tests, all with rigorous inline documentation
-- [ ] Generate documentation.
+- [ ] Generate documentation
 - [ ] Write [README.md](README.md)
+- [ ] Write [examples/README.md](examples/README.md)
 - [ ] Setup GH pages with hook on tag push
 - [ ] Setup GH npm publish hook on tag push
 - [ ] Setup GH release on tag push
