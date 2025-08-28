@@ -21,6 +21,7 @@ Read the [specification](docs/spec.md) in full.
 - Idiomatic rigorously strongly typed cutting-edge TypeScript.
 - Every use of `unknown` must be rigorously defensible.
 - Use of `any` is strictly forbidden.
+- Use type guards instead of `as`. Write both `assert*` and `is*` forms.
 - No code without rigorosly spec-compliant JSDocs.
 - Code and tests should be idiomatically split to files.
 - Tests must have 100% coverage.
