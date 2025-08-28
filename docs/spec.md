@@ -1,7 +1,7 @@
 # Specification: Immutable Plugin System
 
-- **Specification Version:** 1.0.0
-- **Document Revision:** 1.0.1
+- **Specification Version:** 1.1.0
+- **Document Revision:** 1.1.0
 - **Status:** FINAL
 
 This document specifies a minimalist strongly typed immutable plugin system for
@@ -57,8 +57,17 @@ Via negativa, we're:
 
 #### `ImmutableEntities`
 
+- Exclude numeric keys to avoid ambiguity with JavaScript's coercion of numeric
+  object keys to strings and to enforce stable textual identifiers.
+- Excludes empty string `''` to prevent degenerate identifiers.
+
 ```ts
-export type ImmutableEntities<K extends PropertyKey, V> = Record<K, V>;
+export type ImmutableEntityKey = Exclude<PropertyKey, number | ''>;
+
+// Keys are textual (non-empty strings) or symbols; numeric keys are forbidden
+export type ImmutableEntities<K extends ImmutableEntityKey, V> = Readonly<
+  Record<K, V>
+>;
 ```
 
 #### `ImmutablePlugin`
@@ -66,9 +75,16 @@ export type ImmutableEntities<K extends PropertyKey, V> = Record<K, V>;
 ```ts
 export type PluginURN = string;
 
-export interface ImmutablePlugin<C extends Record<unknown, unknown>> {
+export type ImmutableEntitiesRecord<
+  K extends ImmutableEntityKey = ImmutableEntityKey,
+  V extends unknown = unknown,
+> = Readonly<Record<PropertyKey, ImmutableEntities<K, V>>>;
+
+export interface ImmutablePlugin<
+  C extends ImmutableEntitiesRecord = ImmutableEntitiesRecord,
+> {
   readonly name: PluginURN;
-  readonly entities: C;
+  readonly entities: Readonly<C>;
 }
 ```
 
@@ -91,7 +107,9 @@ export interface ImmutableEntityCollection<K extends PropertyKey, E> {
 #### `ImmutableHost`
 
 ```ts
-type ImmutablePlugins<P extends ImmutablePlugin> = Record<PluginURN, P>;
+type ImmutablePlugins<P extends ImmutablePlugin = ImmutablePlugin> = Readonly<
+  Record<PluginURN, P>
+>;
 
 type ImmutableEntityCollections<
   K extends PropertyKey,
@@ -103,6 +121,7 @@ type ImmutableEntityCollections<
 type ImmutableEntityCollectionsFromPlugin<P extends ImmutablePlugin> =
   ImmutableEntityCollections<keyof P['entities'], P['entities']>;
 
+// Intentionally no default parameter to prevent accidental use.
 export class ImmutableHost<P extends ImmutablePlugin> {
   constructor(plugins: ImmutablePlugins<P>);
   readonly plugins: ImmutablePlugins<P>;
@@ -401,6 +420,27 @@ No external dependencies.
 - Cutting-edge `package.json` structure.
 
 ## Document Revision History
+
+### r1.1.0 / v1.1.0
+
+- Key type refinement for inner maps:
+  - Added `ImmutableEntityKey = Exclude<PropertyKey, number | ''>`.
+  - `ImmutableEntities<K, V>` now uses `K extends ImmutableEntityKey` (was
+    `PropertyKey`). This excludes numeric and empty-string keys from inner
+    entity maps to avoid JS numeric key coercion ambiguity and degenerate
+    identifiers.
+- New top-level entities alias:
+  - Introduced `ImmutableEntitiesRecord<K, V>` to model the entities container
+    mapping entity types to inner entity maps.
+- Immutability made explicit:
+  - `ImmutableEntities<K, V>` and `ImmutableEntitiesRecord<K, V>` are
+    `Readonly<…>`.
+  - `ImmutablePlugins<P>` is `Readonly<Record<…>>`.
+  - `ImmutablePlugin.entities` is `Readonly<C>`.
+- Ergonomics:
+  - `ImmutablePlugin` now defaults its generic to `ImmutableEntitiesRecord`, and
+    `ImmutablePlugins` defaults to `ImmutablePlugin`.
+  - `ImmutableHost` intentionally has no default parameter.
 
 ### r1.0.1 / v1.0.0
 
