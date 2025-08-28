@@ -1,8 +1,8 @@
 # TODO
 
-- [x] Finish [spec](doc/spec.md)
-- [x] Rigorously review the [spec](doc/spec.md)
-- [x] Bump the [spec](doc/spec.md) to v1.0.0, r1.0.0
+- [x] Finish [spec](docs/spec.md)
+- [x] Rigorously review the [spec](docs/spec.md)
+- [x] Bump the [spec](docs/spec.md) to v1.0.0, r1.0.0
 - [x] Add pre-made code infrastructure files, and GH funding
 - [x] Add minimal stubs for code and tests
 - [x] Configure [package.json](package.json)
@@ -12,7 +12,7 @@
       omit any or all entity types (the `entities` key remains mandatory, its
       fields may be declared as optional in the concrete `Entities` type)
 - [ ] Rename implementation files (and their tests) so they match what they
-      exporrt (e.g. `ImmutableEntityCollection.ts`)
+      export (e.g. `ImmutableEntityCollection.ts`)
 - [ ] Implement code, example and tests, all with rigorous inline documentation
 - [ ] Generate documentation
 - [ ] Write [README.md](README.md)
