@@ -33,7 +33,7 @@
   "license": "MIT",
   "packageManager": "pnpm@10.13.1",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
     "pretest": "pnpm run lint",
     "test": "tap",
     "lint:eslint": "eslint",
