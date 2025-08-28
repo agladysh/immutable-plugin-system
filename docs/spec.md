@@ -547,9 +547,13 @@ No external dependencies.
   - Replaced ambiguous uses of "implementation(s)" with the appropriate term.
 
 - API: Added optional runtime validation hook
-  - `ImmutableHost` constructor accepts `options?: { requiredEntityTypes?: readonly (keyof P['entities'])[] }` to optionally enforce presence of required entity types at runtime.
-  - Guard functions `isImmutablePlugin(s)` and `assertImmutablePlugin(s)` accept the same option to enable the same check outside the host.
-  - Added “Runtime Validation Rationale” subsection explaining why runtime cannot infer requiredness without an explicit schema.
+  - `ImmutableHost` constructor accepts
+    `options?: { requiredEntityTypes?: readonly (keyof P['entities'])[] }` to
+    optionally enforce presence of required entity types at runtime.
+  - Guard functions `isImmutablePlugin(s)` and `assertImmutablePlugin(s)` accept
+    the same option to enable the same check outside the host.
+  - Added “Runtime Validation Rationale” subsection explaining why runtime
+    cannot infer requiredness without an explicit schema.
 
 ### r1.1.0 / v1.1.0
 
