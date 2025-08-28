@@ -25,7 +25,9 @@
       tests.
 - [ ] Implement code, example and tests, all with rigorous inline documentation
 - [ ] Run `~/.cargo/bin/similarity-ts` and fix reports
-- [ ] Rigorously review the implementation
+- [ ] Clean up any transient change history comments in the code, and similar
+      AI-generated crud
+- [ ] Rigorously review the code, examples, and tests
 - [ ] Generate documentation
 - [ ] Write [README.md](README.md)
 - [ ] Write [examples/README.md](examples/README.md)
