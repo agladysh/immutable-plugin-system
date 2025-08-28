@@ -29,6 +29,7 @@ Read the [specification](docs/spec.md) in full.
 - Tests must have 100% coverage.
 - Run `pnpm -s test` before delivering your code or test changes to the user.
 - Use verbose conventional commit messages.
+- Never commit with `--no-verify` (`-n`) flag to sidestep Git hooks.
 
 ## Commands
 
