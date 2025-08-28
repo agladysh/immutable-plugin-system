@@ -9,15 +9,14 @@ export type {
 
 export { ImmutableEntityCollection } from './collection.js';
 export { ImmutableHost } from './host.js';
+export { isPlainObject, assertPlainObject } from './guards/plain-object.js';
+export { isEntityRecord, assertEntityRecord } from './guards/entity-record.js';
 export {
-  isEntityRecord,
-  isPlainObject,
-  assertPlainObject,
-  assertEntityRecord,
   isEntitiesRecord,
-  isImmutablePlugin,
-  isImmutablePlugins,
-  assertImmutablePlugin,
-  assertImmutablePlugins,
   assertEntitiesRecord,
-} from './guards.js';
+} from './guards/entities-record.js';
+export { isImmutablePlugin, assertImmutablePlugin } from './guards/plugin.js';
+export {
+  isImmutablePlugins,
+  assertImmutablePlugins,
+} from './guards/plugins.js';

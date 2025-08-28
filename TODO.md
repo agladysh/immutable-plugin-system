@@ -17,7 +17,7 @@
 - [x] Migrate guard-adjascent tests (validation checks) to guards from tests for
       code that uses them. Control for redundancy and nuance: no test
       duplication, but all nuances covered.
-- [ ] Split `guards.ts` (and tests) to files in `guards/` by topic due to its
+- [x] Split `guards.ts` (and tests) to files in `guards/` by topic due to its
       size.
 - [ ] Rename implementation files (and their tests) so they match what they
       export (e.g. `ImmutableEntityCollection.ts`). `types.ts` remains.

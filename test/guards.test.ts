@@ -1,16 +1,24 @@
 import { test } from 'tap';
 import {
-  assertImmutablePlugin,
-  assertImmutablePlugins,
-  assertEntitiesRecord,
-  assertEntityRecord,
-  assertPlainObject,
-  isEntitiesRecord,
-  isEntityRecord,
-  isImmutablePlugin,
-  isImmutablePlugins,
   isPlainObject,
-} from '../src/guards.js';
+  assertPlainObject,
+} from '../src/guards/plain-object.js';
+import {
+  isEntityRecord,
+  assertEntityRecord,
+} from '../src/guards/entity-record.js';
+import {
+  isEntitiesRecord,
+  assertEntitiesRecord,
+} from '../src/guards/entities-record.js';
+import {
+  isImmutablePlugin,
+  assertImmutablePlugin,
+} from '../src/guards/plugin.js';
+import {
+  isImmutablePlugins,
+  assertImmutablePlugins,
+} from '../src/guards/plugins.js';
 import type { ImmutablePlugin } from '../src/types.js';
 
 test('isPlainObject - accepts only plain objects', (t) => {

@@ -7,7 +7,8 @@ import type {
   PluginURN,
 } from './types.js';
 import { ImmutableEntityCollection } from './collection.js';
-import { assertImmutablePlugins, isEntityRecord } from './guards.js';
+import { assertImmutablePlugins } from './guards/plugins.js';
+import { isEntityRecord } from './guards/entity-record.js';
 
 // Type guard helpers moved to src/guards.ts
 
