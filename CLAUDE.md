@@ -26,6 +26,7 @@ Read the [specification](docs/spec.md) in full.
 - No code without rigorosly spec-compliant JSDocs.
 - Code and tests should be idiomatically split to files.
 - Tests must have 100% coverage.
+- Use verbose conventional commit messages
 
 ## Commands
 
