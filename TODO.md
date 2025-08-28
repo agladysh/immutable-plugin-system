@@ -8,7 +8,7 @@
 - [x] Configure [package.json](package.json)
 - [x] Run lint and tests
 - [x] Squash to initial commit
-- [ ] Document explicitly (v1.1.0/r1.1.1) and test that plugins are allowed to
+- [x] Document explicitly (v1.1.0/r1.1.1) and test that plugins are allowed to
       omit any or all entity types (the `entities` key remains mandatory, its
       fields may be declared as optional in the concrete `Entities` type). Add a
       test that checks if plugin does not provide a required type, it is not a
