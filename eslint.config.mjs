@@ -3,10 +3,13 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
+  {
+    ignores: ['dist/**', 'node_modules/**'],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    files: ['src/**/*.{js,ts}'],
+    files: ['**/*.{js,ts}'],
     languageOptions: {
       globals: { ...globals.node },
       parserOptions: { projectService: true },
@@ -33,7 +36,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['src/*.cjs'],
+    files: ['**/*.cjs'],
     languageOptions: {
       globals: globals.node,
     },
