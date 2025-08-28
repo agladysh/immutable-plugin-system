@@ -38,18 +38,14 @@ export class ImmutableEntityCollection<K extends PropertyKey, E> {
    */
   constructor(pluginEntities: Record<PluginURN, Record<K, E>>) {
     for (const [pluginURN, entities] of Object.entries(pluginEntities)) {
-      // Handle string/number keys
-      for (const [key, entity] of Object.entries(entities) as [K, E][]) {
-        const existing = this.storage.get(key) ?? [];
-        existing.push({ entity, pluginURN });
-        this.storage.set(key, existing);
-      }
-      // Handle Symbol keys
-      for (const key of Object.getOwnPropertySymbols(entities) as K[]) {
-        const entity = entities[key];
-        const existing = this.storage.get(key) ?? [];
-        existing.push({ entity, pluginURN });
-        this.storage.set(key, existing);
+      // Iterate all own keys (string, number-as-string, symbol) exactly once
+      for (const key of Reflect.ownKeys(entities) as K[]) {
+        const entity = (entities as Record<PropertyKey, E>)[key as PropertyKey];
+        if (entity !== undefined) {
+          const existing = this.storage.get(key) ?? [];
+          existing.push({ entity, pluginURN });
+          this.storage.set(key, existing);
+        }
       }
     }
   }

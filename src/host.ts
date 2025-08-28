@@ -1,28 +1,24 @@
-import type { ImmutablePlugin, PluginURN } from './types.js';
+import type { ImmutablePlugin, ImmutablePlugins, PluginURN } from './types.js';
 import { ImmutableEntityCollection } from './collection.js';
+import { assertImmutablePlugins, isEntityRecord } from './guards.js';
 
-/**
- * Type representing a record of plugins mapped by their URNs.
- *
- * @template P - The plugin type, must extend ImmutablePlugin
- */
-type ImmutablePlugins<P extends ImmutablePlugin<Record<PropertyKey, unknown>>> =
-  Record<PluginURN, P>;
+// Type guard helpers moved to src/guards.ts
+
+// Plugin guard and assertion are defined in src/guards.ts
 
 /**
  * Type that creates entity collections for each entity type in the plugin.
  * Maps entity keys to their corresponding ImmutableEntityCollection types.
+ * This implementation correctly handles the constraint that all entity types are records.
  *
  * @template K - The entity key type, must extend PropertyKey
- * @template T - The entity types record
+ * @template T - The entity types record, where each value must be a record
  */
 type ImmutableEntityCollections<
   K extends PropertyKey,
-  T extends { [k in K]: unknown },
+  T extends { [k in K]: Record<Exclude<PropertyKey, number>, unknown> },
 > = {
-  [k in K]: T[k] extends Record<PropertyKey, unknown>
-    ? ImmutableEntityCollection<keyof T[k], T[k][keyof T[k]]>
-    : ImmutableEntityCollection<PropertyKey, unknown>;
+  [k in K]: ImmutableEntityCollection<keyof T[k], T[k][keyof T[k]]>;
 };
 
 /**
@@ -32,7 +28,9 @@ type ImmutableEntityCollections<
  * @template P - The plugin type, must extend ImmutablePlugin
  */
 type ImmutableEntityCollectionsFromPlugin<
-  P extends ImmutablePlugin<Record<PropertyKey, unknown>>,
+  P extends ImmutablePlugin<
+    Record<PropertyKey, Record<Exclude<PropertyKey, number>, unknown>>
+  >,
 > = ImmutableEntityCollections<keyof P['entities'], P['entities']>;
 
 /**
@@ -43,7 +41,9 @@ type ImmutableEntityCollectionsFromPlugin<
  * @template P - The plugin type, must extend ImmutablePlugin
  */
 export class ImmutableHost<
-  P extends ImmutablePlugin<Record<PropertyKey, unknown>>,
+  P extends ImmutablePlugin<
+    Record<PropertyKey, Record<Exclude<PropertyKey, number>, unknown>>
+  >,
 > {
   /**
    * All plugins managed by this host, indexed by their URNs.
@@ -61,22 +61,21 @@ export class ImmutableHost<
    * Groups entities from all plugins by entity type into collections.
    *
    * @param plugins - Record of plugins mapped by their URNs
+   * @throws TypeError if any plugin is invalid or has mismatched URN
    */
   constructor(plugins: ImmutablePlugins<P>) {
+    // Validate plugins at runtime for additional type safety
+    assertImmutablePlugins(plugins);
     this.plugins = { ...plugins };
 
     // Build entity collections by grouping entities from all plugins by type
     const entityCollections = {} as Record<PropertyKey, unknown>;
 
-    // Get all unique entity type names across all plugins
+    // Get all unique entity type names across all plugins using efficient key iteration
     const allEntityTypes = new Set<PropertyKey>();
     for (const plugin of Object.values(plugins)) {
-      // Handle string/number keys
-      for (const entityType of Object.keys(plugin.entities)) {
-        allEntityTypes.add(entityType);
-      }
-      // Handle Symbol keys
-      for (const entityType of Object.getOwnPropertySymbols(plugin.entities)) {
+      // Use Reflect.ownKeys for efficient iteration over all property keys (strings, numbers, symbols)
+      for (const entityType of Reflect.ownKeys(plugin.entities)) {
         allEntityTypes.add(entityType);
       }
     }
@@ -91,12 +90,9 @@ export class ImmutableHost<
       // Collect entities of this type from all plugins
       for (const [pluginURN, plugin] of Object.entries(plugins)) {
         const entitiesOfType = plugin.entities[entityType];
-        if (entitiesOfType != null) {
-          // entitiesOfType should be a Record<PropertyKey, EntityValue>
-          pluginEntitiesForType[pluginURN] = entitiesOfType as Record<
-            PropertyKey,
-            unknown
-          >;
+        if (entitiesOfType != null && isEntityRecord(entitiesOfType)) {
+          // Type-safe assignment after runtime validation
+          pluginEntitiesForType[pluginURN] = entitiesOfType;
         }
       }
 
@@ -106,6 +102,7 @@ export class ImmutableHost<
       );
     }
 
+    // Safe assignment: entityCollections structure matches expected type
     this.entities =
       entityCollections as ImmutableEntityCollectionsFromPlugin<P>;
   }
