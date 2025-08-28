@@ -19,10 +19,11 @@
       duplication, but all nuances covered.
 - [x] Split `guards.ts` (and tests) to files in `guards/` by topic due to its
       size.
-- [ ] Rename implementation files (and their tests) so they match what they
+- [x] Rename implementation files (and their tests) so they match what they
       export (e.g. `ImmutableEntityCollection.ts`). `types.ts` remains.
 - [ ] Amend spec (v1.1.0/r1.1.2) to require rigorous `tsd` tests. Implement said
       tests.
+- [ ] Add GH CI hook
 - [ ] Implement code, example and tests, all with rigorous inline documentation
 - [ ] Run `~/.cargo/bin/similarity-ts` and fix reports
 - [ ] Clean up any transient change history comments in the code, and similar
