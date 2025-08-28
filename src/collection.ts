@@ -1,4 +1,4 @@
-import type { ImmutableEntityCollection, PluginURN } from './types.js';
+import type { PluginURN } from './types.js';
 
 /**
  * Internal storage item that tracks an entity with its source plugin.
@@ -18,16 +18,14 @@ interface EntityWithPlugin<E> {
 }
 
 /**
- * Concrete implementation of ImmutableEntityCollection.
+ * Implementation of immutable entity collections that provide convenient iteration methods.
  * Wraps Map<K, E[]> functionality with additional utility methods for working with entities.
  * Tracks which plugin each entity came from for proper attribution.
  *
  * @template K - The key type, must extend PropertyKey
  * @template E - The entity type
  */
-export class ImmutableEntityCollectionImpl<K extends PropertyKey, E>
-  implements ImmutableEntityCollection<K, E>
-{
+export class ImmutableEntityCollection<K extends PropertyKey, E> {
   /**
    * Internal storage mapping keys to arrays of entities with their plugin URNs.
    */

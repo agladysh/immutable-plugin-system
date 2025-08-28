@@ -1,7 +1,4 @@
-export type {
-  ImmutableEntities,
-  ImmutableEntityCollection,
-  ImmutableHost,
-  ImmutablePlugin,
-  PluginURN,
-} from './types.js';
+export type { ImmutableEntities, ImmutablePlugin, PluginURN } from './types.js';
+
+export { ImmutableEntityCollection } from './collection.js';
+export { ImmutableHost } from './host.js';

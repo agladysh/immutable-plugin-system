@@ -1,17 +1,15 @@
 import { test } from 'tap';
-import { ImmutableEntityCollectionImpl } from '../src/collection.js';
-import type { ImmutableEntityCollection, PluginURN } from '../src/types.js';
+import { ImmutableEntityCollection } from '../src/collection.js';
+import type { PluginURN } from '../src/types.js';
 
-test('ImmutableEntityCollectionImpl implements interface', (t) => {
-  const collection = new ImmutableEntityCollectionImpl<string, string>({});
-  const interfaceCollection: ImmutableEntityCollection<string, string> =
-    collection;
-  t.ok(interfaceCollection, 'implementation satisfies interface');
+test('ImmutableEntityCollection can be instantiated', (t) => {
+  const collection = new ImmutableEntityCollection<string, string>({});
+  t.ok(collection, 'collection can be created');
   t.end();
 });
 
 test('constructor with empty plugins', (t) => {
-  const collection = new ImmutableEntityCollectionImpl<string, string>({});
+  const collection = new ImmutableEntityCollection<string, string>({});
   t.equal(
     collection.get('any').length,
     0,
@@ -28,7 +26,7 @@ test('constructor with single plugin', (t) => {
       key2: 'value2',
     },
   };
-  const collection = new ImmutableEntityCollectionImpl(pluginEntities);
+  const collection = new ImmutableEntityCollection(pluginEntities);
 
   t.equal(collection.get('key1').length, 1, 'key1 has one entity');
   t.equal(collection.get('key1')[0], 'value1', 'key1 returns correct value');
@@ -52,7 +50,7 @@ test('constructor with multiple plugins and different value types', (t) => {
       'unique-b': 'another-text',
     },
   };
-  const collection = new ImmutableEntityCollectionImpl(pluginEntities);
+  const collection = new ImmutableEntityCollection(pluginEntities);
 
   const shared = collection.get('shared');
   t.equal(shared.length, 2, 'shared key has two entities');
@@ -78,7 +76,7 @@ test('get method edge cases', (t) => {
       key1: 'value1',
     },
   };
-  const collection = new ImmutableEntityCollectionImpl(pluginEntities);
+  const collection = new ImmutableEntityCollection(pluginEntities);
 
   t.same(
     collection.get('key1'),
@@ -104,7 +102,7 @@ test('entries method', (t) => {
       key1: 'value1-b',
     },
   };
-  const collection = new ImmutableEntityCollectionImpl(pluginEntities);
+  const collection = new ImmutableEntityCollection(pluginEntities);
 
   const entriesIterable = { [Symbol.iterator]: () => collection.entries() };
   const entries = Array.from(entriesIterable);
@@ -126,7 +124,7 @@ test('entries method', (t) => {
 });
 
 test('entries method with empty collection', (t) => {
-  const collection = new ImmutableEntityCollectionImpl<string, string>({});
+  const collection = new ImmutableEntityCollection<string, string>({});
   const entriesIterable = { [Symbol.iterator]: () => collection.entries() };
   const entries = Array.from(entriesIterable);
   t.equal(entries.length, 0, 'empty collection entries returns empty array');
@@ -143,7 +141,7 @@ test('flat method', (t) => {
       key1: 'value1-b',
     },
   };
-  const collection = new ImmutableEntityCollectionImpl(pluginEntities);
+  const collection = new ImmutableEntityCollection(pluginEntities);
 
   const flat = collection.flat();
   t.equal(flat.length, 3, 'flat returns correct number of entities');
@@ -166,7 +164,7 @@ test('flat method', (t) => {
 });
 
 test('flat method with empty collection', (t) => {
-  const collection = new ImmutableEntityCollectionImpl<string, string>({});
+  const collection = new ImmutableEntityCollection<string, string>({});
   const flat = collection.flat();
   t.equal(flat.length, 0, 'empty collection flat returns empty array');
   t.end();
@@ -182,7 +180,7 @@ test('map method', (t) => {
       key1: 'value1-b',
     },
   };
-  const collection = new ImmutableEntityCollectionImpl(pluginEntities);
+  const collection = new ImmutableEntityCollection(pluginEntities);
 
   const mapped = collection.map((entities, key) => `${key}:${entities.length}`);
   t.equal(mapped.length, 2, 'map returns correct number of results');
@@ -198,7 +196,7 @@ test('map method with transformation', (t) => {
       letters: 2,
     },
   };
-  const collection = new ImmutableEntityCollectionImpl(pluginEntities);
+  const collection = new ImmutableEntityCollection(pluginEntities);
 
   const mapped = collection.map((entities, key) => ({
     key,
@@ -223,7 +221,7 @@ test('flatMap method', (t) => {
       key1: 'value1-b',
     },
   };
-  const collection = new ImmutableEntityCollectionImpl(pluginEntities);
+  const collection = new ImmutableEntityCollection(pluginEntities);
 
   const flatMapped = collection.flatMap(
     (entity, key, plugin) => `${entity}@${key}#${plugin}`
@@ -251,7 +249,7 @@ test('flatMap method with simple transformation', (t) => {
       key1: 'abc',
     },
   };
-  const collection = new ImmutableEntityCollectionImpl(pluginEntities);
+  const collection = new ImmutableEntityCollection(pluginEntities);
 
   const flatMapped = collection.flatMap(
     (entity, key, plugin) => `${entity}-${key}-${plugin}`
@@ -274,7 +272,7 @@ test('Symbol.iterator method', (t) => {
       key1: 'value1-b',
     },
   };
-  const collection = new ImmutableEntityCollectionImpl(pluginEntities);
+  const collection = new ImmutableEntityCollection(pluginEntities);
 
   const iterated = Array.from(collection);
   t.equal(iterated.length, 3, 'iterator returns correct number of items');
@@ -297,7 +295,7 @@ test('Symbol.iterator with for...of loop', (t) => {
       key1: 'value1',
     },
   };
-  const collection = new ImmutableEntityCollectionImpl(pluginEntities);
+  const collection = new ImmutableEntityCollection(pluginEntities);
 
   const results: Array<[string, string, PluginURN]> = [];
   for (const item of collection) {
@@ -323,7 +321,7 @@ test('plugin attribution consistency', (t) => {
       shared: 'beta-value',
     },
   };
-  const collection = new ImmutableEntityCollectionImpl(pluginEntities);
+  const collection = new ImmutableEntityCollection(pluginEntities);
 
   const flat = collection.flat();
   const sharedEntries = flat.filter(([, key]) => key === 'shared');
@@ -368,7 +366,7 @@ test('type safety with different entity types', (t) => {
       entity2: { id: 2, name: 'second' },
     },
   };
-  const collection = new ImmutableEntityCollectionImpl(pluginEntities);
+  const collection = new ImmutableEntityCollection(pluginEntities);
 
   const entities = collection.get('entity1');
   t.equal(entities.length, 1, 'object entity retrieved correctly');
@@ -386,7 +384,7 @@ test('immutability of returned arrays', (t) => {
       key1: 'value1',
     },
   };
-  const collection = new ImmutableEntityCollectionImpl(pluginEntities);
+  const collection = new ImmutableEntityCollection(pluginEntities);
 
   const entities1 = collection.get('key1');
   const entities2 = collection.get('key1');
@@ -420,7 +418,7 @@ test('Symbol keys support', (t) => {
       [sharedSym]: 100,
     },
   };
-  const collection = new ImmutableEntityCollectionImpl(pluginEntities);
+  const collection = new ImmutableEntityCollection(pluginEntities);
 
   t.equal(
     collection.get(symKey1)[0],
@@ -466,7 +464,7 @@ test('mixed key types (string and Symbol)', (t) => {
       [symKey]: 999,
     },
   };
-  const collection = new ImmutableEntityCollectionImpl(pluginEntities);
+  const collection = new ImmutableEntityCollection(pluginEntities);
 
   t.equal(
     collection.get('stringKey')[0],
@@ -507,7 +505,7 @@ test('large dataset performance', (t) => {
     }
   }
 
-  const collection = new ImmutableEntityCollectionImpl(pluginEntities);
+  const collection = new ImmutableEntityCollection(pluginEntities);
 
   const flat = collection.flat();
   t.equal(flat.length, 200, 'large dataset flat returns correct count'); // 10 plugins * 20 keys = 200
@@ -529,7 +527,7 @@ test('empty plugin entities', (t) => {
       key1: 'value1',
     },
   };
-  const collection = new ImmutableEntityCollectionImpl(pluginEntities);
+  const collection = new ImmutableEntityCollection(pluginEntities);
 
   t.equal(
     collection.get('key1').length,
