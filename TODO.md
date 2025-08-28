@@ -8,6 +8,9 @@
 - [x] Configure [package.json](package.json)
 - [x] Run lint and tests
 - [x] Squash to initial commit
+- [ ] Document explicitly (v1.1.1/r1.0.0) and test that plugins are allowed to
+      omit any or all entity types (the `entities` key remains mandatory, its
+      fields may be declared as optional in the concrete `Entities` type)
 - [ ] Rename implementation files (and their tests) so they match what they
       exporrt (e.g. `ImmutableEntityCollection.ts`)
 - [ ] Implement code, example and tests, all with rigorous inline documentation
