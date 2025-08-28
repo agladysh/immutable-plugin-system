@@ -65,11 +65,19 @@ export class ImmutableHost<P extends ImmutablePlugin<ImmutableEntitiesRecord>> {
    * Groups entities from all plugins by entity type into collections.
    *
    * @param plugins - Record of plugins mapped by their URNs
-   * @throws TypeError if any plugin is invalid or has mismatched URN
+   * @param options - Optional runtime validation options for integrations.
+   *  - `requiredEntityTypes`: if provided, each plugin must have these entity
+   *    types present as own properties and valid inner records. This augments
+   *    structural validation; primary enforcement remains at the type level.
+   * @throws TypeError if any plugin is invalid, has mismatched URN, or is
+   *  missing a required entity type specified in `options`.
    */
-  constructor(plugins: ImmutablePlugins<P>) {
+  constructor(
+    plugins: ImmutablePlugins<P>,
+    options?: { requiredEntityTypes?: readonly PropertyKey[] }
+  ) {
     // Validate plugins at runtime for additional type safety
-    assertImmutablePlugins(plugins);
+    assertImmutablePlugins(plugins, options);
     this.plugins = { ...plugins };
 
     // Build entity collections by grouping entities from all plugins by type

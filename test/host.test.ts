@@ -2,6 +2,7 @@ import { test } from 'tap';
 import { ImmutableHost } from '../src/host.js';
 import type { ImmutableEntityCollection } from '../src/collection.js';
 import type {
+  ImmutableEntities,
   ImmutableEntityKey,
   ImmutablePlugin,
   PluginURN,
@@ -18,11 +19,80 @@ test('ImmutableHost can be instantiated', (t) => {
   t.end();
 });
 
+test('host options: requiredEntityTypes enforced at runtime', (t) => {
+  type Entities = {
+    assets: ImmutableEntities<string, string>;
+    commands?: ImmutableEntities<string, string>;
+  };
+  type P = ImmutablePlugin<Entities>;
+
+  const valid: P = { name: 'valid', entities: { assets: { ok: 'v' } } };
+  const invalid = {
+    name: 'invalid',
+    entities: { commands: { run: 'noop' } },
+  } as unknown as P;
+
+  t.throws(
+    () =>
+      new ImmutableHost<P>(
+        { valid, invalid },
+        { requiredEntityTypes: ['assets'] }
+      ),
+    'missing required entity type is rejected when configured'
+  );
+
+  t.doesNotThrow(
+    () => new ImmutableHost<P>({ valid }, { requiredEntityTypes: ['assets'] }),
+    'host accepts when all plugins satisfy required types'
+  );
+
+  t.end();
+});
+
+test('host options: symbol entity type required', (t) => {
+  const sym = Symbol('sym-req');
+
+  type Entities = {
+    [sym]?: ImmutableEntities<string, string>;
+  };
+  type P = ImmutablePlugin<Entities>;
+
+  const ok: P = { name: 'ok', entities: { [sym]: { a: '1' } } } as P;
+  const bad = { name: 'bad', entities: {} } as unknown as P;
+
+  t.doesNotThrow(
+    () => new ImmutableHost<P>({ ok }, { requiredEntityTypes: [sym] }),
+    'host accepts when symbol entity type present'
+  );
+
+  t.throws(
+    () => new ImmutableHost<P>({ bad }, { requiredEntityTypes: [sym] }),
+    'host rejects when required symbol entity type missing'
+  );
+
+  t.end();
+});
+
 test('constructor with empty plugins', (t) => {
   const host = new ImmutableHost<TestPlugin>({});
 
   t.same(host.plugins, {}, 'plugins property is empty object');
   t.same(host.entities, {}, 'entities property is empty object');
+  t.end();
+});
+
+test('plugin with empty entities object is accepted', (t) => {
+  const emptyPlugin: TestPlugin = { name: 'empty-plugin', entities: {} };
+
+  const host = new ImmutableHost<TestPlugin>({ 'empty-plugin': emptyPlugin });
+
+  t.equal(Object.keys(host.plugins).length, 1, 'one plugin stored');
+  t.equal(
+    Object.keys(host.entities).length,
+    0,
+    'no entity sections discovered'
+  );
+
   t.end();
 });
 
@@ -67,6 +137,48 @@ test('constructor with single plugin', (t) => {
     host.entities.commands.get('cmd1')[0],
     'command1',
     'command1 has correct value'
+  );
+
+  t.end();
+});
+
+test('plugins may omit arbitrary entity sections', (t) => {
+  const pluginA: TestPlugin = {
+    name: 'omit-a',
+    entities: {
+      assets: { a1: 'A-asset-1', shared: 'A-shared' },
+    },
+  };
+
+  const pluginB: TestPlugin = {
+    name: 'omit-b',
+    entities: {
+      commands: { c1: 'B-command-1' },
+    },
+  };
+
+  const host = new ImmutableHost<TestPlugin>({
+    'omit-a': pluginA,
+    'omit-b': pluginB,
+  });
+
+  t.equal(
+    Object.keys(host.entities).length,
+    2,
+    'two entity sections discovered'
+  );
+  t.ok(host.entities.assets, 'assets collection exists');
+  t.ok(host.entities.commands, 'commands collection exists');
+
+  t.equal(
+    host.entities.assets.get('a1')[0],
+    'A-asset-1',
+    'asset from plugin-a present'
+  );
+  t.equal(
+    host.entities.commands.get('c1')[0],
+    'B-command-1',
+    'command from plugin-b present'
   );
 
   t.end();

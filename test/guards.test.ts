@@ -40,6 +40,126 @@ test('isPlainObject - accepts only plain objects', (t) => {
 
   t.end();
 });
+
+test('requiredEntityTypes - single plugin predicate and assertion', (t) => {
+  const plugin: ImmutablePlugin = {
+    name: 'p',
+    entities: { type: { k: 'v' } },
+  };
+
+  t.ok(
+    isImmutablePlugin(plugin, { requiredEntityTypes: ['type'] }),
+    'predicate accepts when required entity type present'
+  );
+
+  t.notOk(
+    isImmutablePlugin(plugin, { requiredEntityTypes: ['missing'] }),
+    'predicate rejects when required entity type missing'
+  );
+
+  t.doesNotThrow(
+    () => assertImmutablePlugin(plugin, { requiredEntityTypes: ['type'] }),
+    'assertion accepts when required present'
+  );
+
+  t.throws(
+    () => assertImmutablePlugin(plugin, { requiredEntityTypes: ['missing'] }),
+    /Invalid plugin structure/,
+    'assertion throws when required missing'
+  );
+
+  t.end();
+});
+
+test('requiredEntityTypes - plugins record predicate and assertion', (t) => {
+  const good: ImmutablePlugin = {
+    name: 'good',
+    entities: { t: { a: 1 } },
+  };
+
+  const missing: ImmutablePlugin = {
+    name: 'missing',
+    entities: { other: { a: 1 } },
+  };
+
+  t.ok(
+    isImmutablePlugins({ good }, { requiredEntityTypes: ['t'] }),
+    'plugins record predicate accepts when all provide required types'
+  );
+
+  t.notOk(
+    isImmutablePlugins({ good, missing }, { requiredEntityTypes: ['t'] }),
+    'plugins record predicate rejects when any plugin misses required type'
+  );
+
+  t.doesNotThrow(
+    () => assertImmutablePlugins({ good }, { requiredEntityTypes: ['t'] }),
+    'plugins record assertion accepts when all good'
+  );
+
+  t.throws(
+    () =>
+      assertImmutablePlugins({ good, missing }, { requiredEntityTypes: ['t'] }),
+    /Invalid plugin structure/,
+    'plugins record assertion throws when any missing'
+  );
+
+  t.end();
+});
+
+test('requiredEntityTypes supports symbol entity types', (t) => {
+  const sym = Symbol('sym');
+  const plugin: ImmutablePlugin = {
+    name: 'sym-plugin',
+    entities: { [sym]: { k: 'v' } },
+  };
+
+  t.ok(
+    isImmutablePlugin(plugin, { requiredEntityTypes: [sym] }),
+    'predicate accepts with symbol key'
+  );
+
+  t.doesNotThrow(
+    () => assertImmutablePlugin(plugin, { requiredEntityTypes: [sym] }),
+    'assertion accepts with symbol key'
+  );
+
+  t.end();
+});
+
+test('requiredEntityTypes re-checks inner record shape on access', (t) => {
+  // Construct entities with a getter that returns a valid record on first read
+  // (during isEntitiesRecord) and an invalid value on second read (during
+  // requiredEntityTypes check). This ensures coverage of the re-validation path.
+  let first = true;
+  const entities = Object.create(null) as Record<string, unknown>;
+  Object.defineProperty(entities, 'type', {
+    enumerable: true,
+    configurable: false,
+    get() {
+      if (first) {
+        first = false;
+        return { k: 'v' }; // valid inner record
+      }
+      return 'not-a-record'; // invalid on second access
+    },
+  });
+
+  const plugin = { name: 'p', entities } as unknown as ImmutablePlugin;
+
+  t.notOk(
+    isImmutablePlugin(plugin, { requiredEntityTypes: ['type'] }),
+    'predicate rejects when required type later resolves to invalid record'
+  );
+
+  t.throws(
+    () => assertImmutablePlugin(plugin, { requiredEntityTypes: ['type'] }),
+    /Invalid plugin structure/,
+    'assertion throws when re-validation fails for required type'
+  );
+
+  t.end();
+});
 test('assertPlainObject - assertion variant', (t) => {
   t.doesNotThrow(() => assertPlainObject({}), 'accepts object');
   t.throws(
