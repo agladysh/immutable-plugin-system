@@ -1,7 +1,7 @@
 # Specification: Immutable Plugin System
 
 - **Specification Version:** 1.1.0
-- **Document Revision:** 1.1.0
+- **Document Revision:** 1.1.1
 - **Status:** FINAL
 
 This document specifies a minimalist strongly typed immutable plugin system for
@@ -22,31 +22,137 @@ Via negativa, we're:
 - **Not a resource management system:** our memory and performance overhead is
   minimal
 
+### Terminology
+
+- **Library**: this package — the immutable plugin system as specified here
+  (exported types and the `ImmutableHost` machinery).
+
+- **Integration**: application‑specific code that uses the library (your
+  concrete host, plugin set, and surrounding app logic). Prefer this term over
+  "implementation" when referring to consumer code.
+
+- **Library implementation**: the code of this package that realizes the spec.
+
+- **Plugin URN**: unique string identifier of a plugin (`PluginURN`).
+
+- **Entity type**: a top‑level key under `plugin.entities`; identifies a family
+  of entities (e.g., `assets`, `commands`, a symbol, or another string key).
+
+- **Entities record**: the container mapping entity types to their inner maps
+  (`ImmutableEntitiesRecord`).
+
+- **Inner entity map**: the record for a specific entity type mapping entity
+  keys to values (`ImmutableEntities<K, V>`).
+
+- **Entity**: an opaque value stored in an inner entity map, provided by a
+  plugin under a given entity type and key. The library treats entities as
+  immutable and does not mutate or manage their lifecycle; their shape and
+  semantics are defined by the integration.
+
+- **Entity key**: a key within an inner entity map; must be a non‑empty string
+  or a symbol (`ImmutableEntityKey`).
+
+- **Plugin**: an integration-provided object implementing `ImmutablePlugin<C>`
+  that supplies entities via `entities`.
+
+- **Plugins record**: a mapping from `PluginURN` to plugin
+  (`ImmutablePlugins<P>`). Each plugin’s `name` MUST equal its URN key.
+
+- **Host**: the orchestrator instance (`ImmutableHost<P>`) that aggregates
+  plugin entities and exposes discovery via entity collections.
+
+- **Concrete Entities type**: the integration’s schema for `plugin.entities`,
+  defining which entity types exist, their inner map shapes, and which are
+  required vs. optional.
+
+- **Entity collection**: the aggregated view per entity type
+  (`ImmutableEntityCollection<K, E>`), iterable and providing helpers like
+  `get`, `entries`, `flat`, `map`, `flatMap`.
+
+- **Entity discovery**: the host’s construction‑time grouping of all
+  plugin‑provided inner maps into entity collections (by entity type).
+
+- **Provenance (attribution)**: for every entity in a collection, the host keeps
+  the providing plugin’s `PluginURN`.
+
+- **Conflict (duplication)**: multiple entities under the same entity key within
+  an entity type; semantics are integration‑defined, while the host preserves
+  multiplicity.
+
+- **Plain object**: objects with prototype `Object.prototype` or `null`;
+  excludes arrays, Maps, Sets, Dates, class instances. Used by runtime guards to
+  validate `entities` and inner entity maps.
+
+- **Entity matching logic**: integration‑defined rules for interpreting entity
+  keys and uniqueness within an entity type. The host remains agnostic.
+
 ### Entities
 
 - Plugins expose the full set of their available entities.
+
 - Host maintains the full set of the entities available by plugin.
-- Entity matching logic is provided by implementation for each entity type.
-- Entity conflicts are handled by implementations. Host is agnostic to entity
+
+- Entity matching logic is provided by integrations for each entity type.
+
+- Entity conflicts are handled by integrations. Host is agnostic to entity
   duplication between plugins.
+
+#### Entity Type Optionality
+
+- The `entities` property on every plugin is mandatory.
+
+- Within `entities`, each entity type (top‑level field) is required or optional
+  exactly as declared by the concrete `Entities` type used by the host. Optional
+  entity types MAY be omitted; required entity types MUST be present.
+
+- A plugin MAY provide `entities: {}` if and only if all entity types in the
+  concrete `Entities` type are optional.
+
+- Integrations MUST treat an omitted optional entity type as contributing no
+  entities (i.e., an empty collection during discovery).
+
+- Required vs. optional status is normative at the type level (TypeScript).
+  Integrations MAY additionally enforce at runtime that required entity types
+  are present when such requirement is knowable for the concrete host
+  configuration.
+
+##### Runtime Validation Rationale
+
+- Primary contract: TypeScript. Required/optional entity types are defined by
+  the integration’s concrete `Entities` type and enforced at compile time.
+
+- Runtime ambiguity: Without an explicit schema, a host cannot infer whether an
+  omitted entity type is optional or a violation. Inferring from "what other
+  plugins provide" would incorrectly turn optional types into required ones.
+
+- Library stance: The library always validates container shapes and inner record
+  invariants. Enforcement of required entity types at runtime is integration‑
+  dependent and optional, enabled by providing explicit `requiredEntityTypes`.
 
 ### Out of Scope
 
 - **Plugin and entity lifetime management**. Immutable by design.
+
 - **Plugin discovery.** See e.g.
   [`installed-node-modules`](https://www.npmjs.com/package/installed-node-modules).
-- **Plugin ordering and dependency management.** Handled prior to initialization
-  by implementations.
-- **API version management.** Concrete version is handled on the implementation
-  end. We provide a high-level generic API. If we ever find a need to introduce
+
+- **Plugin ordering and dependency management.** Handled by integrations prior
+  to host initialization.
+
+- **API version management.** Concrete version is selected on the integration
+  side. We provide a high-level generic API. If we ever find a need to introduce
   a breaking change post v1.0.0, it will be released as a separate module (e.g.
   simple-plugin-host-2).
+
 - **Plugin and host configuration.** Implementations provide their own.
 
 ## API
 
 - Our code ensures maximal type safety reasonably possible.
 - Our code must be async-neutral where reasonable.
+- We validate at runtime only invariants that would break internal logic.
+  Stricter runtime validations may be provided for convenience
+  (integration‑dependent).
 
 ### Types
 
@@ -123,7 +229,10 @@ type ImmutableEntityCollectionsFromPlugin<P extends ImmutablePlugin> =
 
 // Intentionally no default parameter to prevent accidental use.
 export class ImmutableHost<P extends ImmutablePlugin> {
-  constructor(plugins: ImmutablePlugins<P>);
+  constructor(
+    plugins: ImmutablePlugins<P>,
+    options?: { requiredEntityTypes?: readonly (keyof P['entities'])[] }
+  );
   readonly plugins: ImmutablePlugins<P>;
   readonly entities: ImmutableEntityCollectionsFromPlugin<P>;
 }
@@ -154,7 +263,7 @@ against expected output, which is stored alongside the example.
 ### Reference Implementation
 
 Code below is normative, and, in addition to being the example, further
-illustrating intended semantics of the module implementation.
+illustrating intended semantics of the library implementation.
 
 #### Events Module
 
@@ -392,7 +501,7 @@ ctx.print(`Running "bar": ${ host.run('bar', 'world') }`);
 
 - Black-box test of an example cli program as described above
 - Full contract tests on all sources
-- Rigorous implementation tests with full coverage
+- Rigorous library implementation tests with full coverage
 
 ## Stack
 
@@ -420,6 +529,27 @@ No external dependencies.
 - Cutting-edge `package.json` structure.
 
 ## Document Revision History
+
+### r1.1.1 / v1.1.0
+
+- Clarified entity type optionality:
+  - `plugin.entities` is mandatory; entity types (top‑level fields) are
+    required/optional exactly as declared by the concrete `Entities` type.
+  - Omitted optional entity types contribute no entities and MUST be handled by
+    the host as empty collections.
+  - Required/optional enforcement is primarily a TypeScript contract; runtime
+    checks are optional and integration‑dependent (host‑specific) when the
+    requirement is knowable at runtime.
+
+- Terminology clarified:
+  - Introduced "Integration" to refer to consumer code using the library, and
+    "Library implementation" for this package’s code.
+  - Replaced ambiguous uses of "implementation(s)" with the appropriate term.
+
+- API: Added optional runtime validation hook
+  - `ImmutableHost` constructor accepts `options?: { requiredEntityTypes?: readonly (keyof P['entities'])[] }` to optionally enforce presence of required entity types at runtime.
+  - Guard functions `isImmutablePlugin(s)` and `assertImmutablePlugin(s)` accept the same option to enable the same check outside the host.
+  - Added “Runtime Validation Rationale” subsection explaining why runtime cannot infer requiredness without an explicit schema.
 
 ### r1.1.0 / v1.1.0
 
