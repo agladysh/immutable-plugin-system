@@ -10,15 +10,17 @@
 - [x] Squash to initial commit
 - [ ] Document explicitly (v1.1.0/r1.1.1) and test that plugins are allowed to
       omit any or all entity types (the `entities` key remains mandatory, its
-      fields may be declared as optional in the concrete `Entities` type).
-      Add a test that checks if plugin does not provide a required type,
-      it is not a valid plugin (works at runtime only if more than one plugin
-      is provided, of course).
-- [ ] Amend spec (v1.1.0/r1.1.2) to require rigorous `tsd` tests. Implement said tests.
-- [ ] Migrate guard-adjascent tests (validation checks) to guards from tests for code that uses them.
-      Control for redundancy and nuance: no test duplication, but all nuances covered.
+      fields may be declared as optional in the concrete `Entities` type). Add a
+      test that checks if plugin does not provide a required type, it is not a
+      valid plugin (works at runtime only if more than one plugin is provided,
+      of course).
+- [ ] Migrate guard-adjascent tests (validation checks) to guards from tests for
+      code that uses them. Control for redundancy and nuance: no test
+      duplication, but all nuances covered.
 - [ ] Rename implementation files (and their tests) so they match what they
       export (e.g. `ImmutableEntityCollection.ts`)
+- [ ] Amend spec (v1.1.0/r1.1.2) to require rigorous `tsd` tests. Implement said
+      tests.
 - [ ] Implement code, example and tests, all with rigorous inline documentation
 - [ ] Run `~/.cargo/bin/similarity-ts` and fix reports
 - [ ] Rigorously review the implementation
