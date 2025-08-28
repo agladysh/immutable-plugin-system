@@ -21,6 +21,7 @@ Read the [specification](docs/spec.md) in full.
 - Idiomatic rigorously strongly typed cutting-edge TypeScript.
 - Every use of `unknown` must be rigorously defensible.
 - Use of `any` is strictly forbidden.
+- Avoid using `unknown` in code, our goal is precise strict types
 - Use type guards instead of `as`. Write both `assert*` and `is*` forms.
 - No code without rigorosly spec-compliant JSDocs.
 - Code and tests should be idiomatically split to files.
@@ -28,9 +29,9 @@ Read the [specification](docs/spec.md) in full.
 
 ## Commands
 
-- `pnpm build` - Compiles TypeScript to dist/
-- `pnpm test` - Runs tap tests with linting (pretest hook)
-- `pnpm lint` - Runs tsc, eslint, prettier, and markdownlint
-- `pnpm fix` - Auto-fixes eslint, prettier, and markdownlint issues
-- `pnpm tap` - Direct test runner without pretest hook
-- `pnpm tap report` - Display test coverage report
+- `pnpm -s build` - Compiles TypeScript to dist/
+- `pnpm -s test` - Runs tap tests with linting (pretest hook)
+- `pnpm -s lint` - Runs tsc, eslint, prettier, and markdownlint
+- `pnpm -s fix` - Auto-fixes eslint, prettier, and markdownlint issues
+- `pnpm -s tap` - Direct test runner without pretest hook
+- `pnpm -s tap report` - Display test coverage report
