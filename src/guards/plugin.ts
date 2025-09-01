@@ -13,7 +13,11 @@ import { isEntityRecord } from './entity-record.js';
  * - Optionally enforces that specific entity types are present and valid when `options.requiredEntityTypes` is provided.
  *
  * @param plugin - Runtime candidate
- * @param options - Optional validation options
+ * @param options - Optional validation options. Typing note: `requiredEntityTypes`
+ *   is provided as `readonly PropertyKey[]` here because no generic plugin
+ *   context exists in standalone guards. The `ImmutableHost` constructor accepts
+ *   a compile-time typed list `readonly (keyof P['entities'])[]` for the same
+ *   semantics.
  * @returns True if candidate matches ImmutablePlugin runtime contract
  */
 export function isImmutablePlugin(
@@ -55,8 +59,10 @@ export function isImmutablePlugin(
 }
 
 /**
- * Assertion over a single plugin. Structural validation only by default; optionally
- * enforces presence and validity of `options.requiredEntityTypes`.
+ * Assertion over a single plugin. Structural validation only by default;
+ * optionally enforces presence and validity of `options.requiredEntityTypes`.
+ * Typing note: see `isImmutablePlugin` for rationale on the `PropertyKey[]`
+ * shape of `requiredEntityTypes` in guards vs host constructor typing.
  */
 export function assertImmutablePlugin(
   plugin: unknown,
