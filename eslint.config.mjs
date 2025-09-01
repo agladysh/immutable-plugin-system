@@ -52,6 +52,16 @@ export default tseslint.config(
       // Do not require TS project for tsd tests; lint syntactically only
       parserOptions: { projectService: false },
     },
+    rules: {
+      // TSD fixtures intentionally declare unused symbols and params
+      '@typescript-eslint/no-unused-vars': 'off',
+      // TSD fixtures use `any` to assert negative cases
+      '@typescript-eslint/no-explicit-any': 'off',
+      // TSD fixtures often use `{}` to model empty entities
+      '@typescript-eslint/no-empty-object-type': 'off',
+      // TSD fixtures reassign patterns aren’t relevant to runtime code
+      'prefer-const': 'off',
+    },
   },
   {
     files: ['**/*.cjs'],

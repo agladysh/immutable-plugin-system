@@ -34,7 +34,7 @@
   "packageManager": "pnpm@10.13.1",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "test:tsd": "tsd",
+    "test:tsd": "pnpm -s build && tsd",
     "test:tap": "tap",
     "test:all": "pnpm -s run test:tsd && pnpm -s run test:tap",
     "test": "pnpm -s run lint && pnpm -s run test:all",
