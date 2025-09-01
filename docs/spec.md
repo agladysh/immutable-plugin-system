@@ -1,7 +1,7 @@
 # Specification: Immutable Plugin System
 
 - **Specification Version:** 1.1.0
-- **Document Revision:** 1.1.2
+- **Document Revision:** 1.1.3
 - **Status:** FINAL
 
 This document specifies a minimalist strongly typed immutable plugin system for
@@ -33,7 +33,7 @@ Via negativa, we're:
 
 - **Library implementation**: the code of this package that realizes the spec.
 
-- **Plugin URN**: unique string identifier of a plugin (`PluginURN`).
+- **Plugin URN**: unique non‑empty string identifier of a plugin (`PluginURN`).
 
 - **Entity type**: a top‑level key under `plugin.entities`; identifies a family
   of entities (e.g., `assets`, `commands`, a symbol, or another string key).
@@ -165,13 +165,18 @@ Via negativa, we're:
 
 - Exclude numeric keys to avoid ambiguity with JavaScript's coercion of numeric
   object keys to strings and to enforce stable textual identifiers.
-- Excludes empty string `''` to prevent degenerate identifiers.
+- Empty string handling is precise:
+  - For literal string unions, the empty string `''` is excluded at the type
+    level via `NonEmptyString`.
+  - For the broad `string` key, ergonomics are preserved (all strings allowed at
+    the type level); runtime guards still reject empty keys.
 
 ```ts
-export type ImmutableEntityKey = Exclude<PropertyKey, number | ''>;
+type NonEmptyString<S extends string = string> = '' extends S ? never : S;
+export type ImmutableEntityKey = symbol | NonEmptyString;
 
 // Keys are textual (non-empty strings) or symbols; numeric keys are forbidden
-export type ImmutableEntities<K extends ImmutableEntityKey, V> = Readonly<
+export type ImmutableEntities<K extends string | symbol, V> = Readonly<
   Record<K, V>
 >;
 ```
@@ -182,7 +187,7 @@ export type ImmutableEntities<K extends ImmutableEntityKey, V> = Readonly<
 export type PluginURN = string;
 
 export type ImmutableEntitiesRecord<
-  K extends ImmutableEntityKey = ImmutableEntityKey,
+  K extends string | symbol = string | symbol,
   V extends unknown = unknown,
 > = Readonly<Record<PropertyKey, ImmutableEntities<K, V>>>;
 
@@ -200,7 +205,7 @@ export interface ImmutablePlugin<
 - Includes idiomatic `flat`, `map` and `flatMap` methods for convenience.
 
 ```ts
-export interface ImmutableEntityCollection<K extends PropertyKey, E> {
+export interface ImmutableEntityCollection<K extends string | symbol, E> {
   get(key: K): E[];
   entries(): Iterator<[K, E[]]>;
   flat(): [E, K, PluginURN][];
@@ -221,7 +226,7 @@ type ImmutableEntityCollections<
   K extends PropertyKey,
   T extends { [k in K]: unknown },
 > = {
-  [k in K]: ImmutableEntityCollection<keyof T[k], T[k][keyof T[k]]>;;
+  readonly [k in K]: ImmutableEntityCollection<keyof T[k], T[k][keyof T[k]]>;
 };
 
 type ImmutableEntityCollectionsFromPlugin<P extends ImmutablePlugin> =
@@ -530,6 +535,24 @@ No external dependencies.
 - Cutting-edge `package.json` structure.
 
 ## Document Revision History
+
+### r1.1.3 / v1.1.0
+
+- Key alias tightened: `ImmutableEntityKey = symbol | NonEmptyString` (removes
+  broad `string`; numeric keys remain excluded by construction).
+- Entities ergonomics clarified:
+  `ImmutableEntities<K extends string | symbol, V>`; literal string unions
+  exclude empty string `''` via `NonEmptyString`, broad `string` remains allowed
+  for ergonomics. Runtime guards still reject empty and numeric‑like keys.
+- Entities record generic narrowed to textual keys:
+  `ImmutableEntitiesRecord<K extends string | symbol, V>`.
+- Entity collections updated:
+  - `ImmutableEntityCollection<K extends string | symbol, E>`.
+  - `ImmutableEntityCollections` mapping marked `readonly` in the snippet.
+  - Fixed a minor snippet typo (duplicate semicolon).
+- Host options: Added a note clarifying that the constructor accepts
+  `readonly (keyof P['entities'])[]`, while standalone guard functions accept a
+  runtime `readonly PropertyKey[]` list; semantics are the same.
 
 ### r1.1.2 / v1.1.0
 
