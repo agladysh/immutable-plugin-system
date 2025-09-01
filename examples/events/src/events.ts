@@ -1,4 +1,7 @@
-import type { ImmutableEntities } from '../../../src/index.js';
+import {
+  ImmutableEntityCollection,
+  type ImmutableEntities,
+} from '../../../dist/index.js';
 
 export type EventURN = string;
 
@@ -6,49 +9,112 @@ export interface Event<T extends EventURN> {
   readonly name: T;
 }
 
-export type EventListener<E extends Event<EventURN>> = (event: E) => void;
+// Bivariant listener type to allow assigning narrower event handlers to
+// broader unions (sufficient for this example module).
+type _Bivariant<T> = { bivarianceHack: T }['bivarianceHack'];
+export type EventListener<E extends Event<EventURN>> = _Bivariant<
+  (event: E) => void
+>;
 
 export type Events<
   EventUnion extends Event<EventURN>,
   K extends EventUnion['name'] = EventUnion['name'],
 > = Record<K, EventUnion>;
 
+// Map each event name to its listener; value type is the union listener.
 export type EventEntities<EventUnion extends Event<EventURN>> =
-  ImmutableEntities<
-    EventUnion['name'],
-    { [E in EventUnion as E['name']]: EventListener<E> }
-  >;
+  ImmutableEntities<EventUnion['name'], EventListener<EventUnion>>;
 
 export interface Emitter<EventUnion extends Event<EventURN>> {
   emit(event: EventUnion): boolean;
-  on<E extends EventUnion>(listener: EventListener<E>): this;
+  on(listener: EventListener<EventUnion>): this;
+}
+
+function forEachEntry<K extends string, V>(
+  obj: Readonly<Record<K, V>>,
+  fn: (key: K, value: V) => void
+): void {
+  for (const key of Object.keys(obj) as K[]) {
+    fn(key, obj[key]);
+  }
+}
+
+// In real life, prefer explicit schema and stricter guards; this is a
+// pragmatic heuristic sufficient for the example.
+function isListenerCollection<EventUnion extends Event<EventURN>>(
+  value: unknown
+): value is ImmutableEntityCollection<
+  EventUnion['name'],
+  EventListener<EventUnion>
+> {
+  if (!(value instanceof ImmutableEntityCollection)) {
+    return false;
+  }
+  // Best-effort runtime probe: ensure iterator yields a function as first item
+  const iter = (value as Iterable<unknown>)[Symbol.iterator]();
+  const next = iter.next();
+  if (next.done) {
+    return true;
+  } // empty collection is acceptable
+  const first = next.value as unknown as [unknown, unknown, unknown];
+  return typeof first?.[0] === 'function';
+}
+
+// In real life, prefer explicit schema and stricter guards; this is a
+// simplified shape check sufficient for the example.
+function isEventEntitiesRecord<EventUnion extends Event<EventURN>>(
+  value: unknown
+): value is EventEntities<EventUnion> {
+  if (value === null || typeof value !== 'object') {
+    return false;
+  }
+  for (const [, v] of Object.entries(value as Record<string, unknown>)) {
+    if (typeof v !== 'function') {
+      return false;
+    }
+  }
+  return true;
 }
 
 export function emitterFromEntities<EventUnion extends Event<EventURN>>(
-  entities: EventEntities<EventUnion>
+  entities:
+    | EventEntities<EventUnion>
+    | ImmutableEntityCollection<EventUnion['name'], EventListener<EventUnion>>
 ): Emitter<EventUnion> {
-  const listeners: Map<string, EventListener<EventUnion>[]> = new Map();
+  const perEvent: Map<string, EventListener<EventUnion>[]> = new Map();
+  const anyListeners: EventListener<EventUnion>[] = [];
 
-  for (const [eventName, listener] of Object.entries(entities)) {
-    if (!listeners.has(eventName)) {
-      listeners.set(eventName, []);
+  const add = (name: string, listener: EventListener<EventUnion>): void => {
+    if (!perEvent.has(name)) {
+      perEvent.set(name, []);
     }
-    listeners.get(eventName)!.push(listener);
+    perEvent.get(name)!.push(listener);
+  };
+
+  if (isListenerCollection<EventUnion>(entities)) {
+    for (const [listener, name] of entities) {
+      add(String(name), listener);
+    }
+  } else if (isEventEntitiesRecord<EventUnion>(entities)) {
+    forEachEntry(entities, (eventName, listener) => {
+      add(eventName, listener);
+    });
   }
 
   return {
     emit(event: EventUnion): boolean {
-      const eventListeners = listeners.get(event.name);
-      if (eventListeners) {
-        for (const listener of eventListeners) {
-          listener(event);
-        }
-        return true;
+      const list = perEvent.get(event.name) ?? [];
+      for (const l of list) {
+        l(event);
       }
-      return false;
+      for (const l of anyListeners) {
+        l(event);
+      }
+      return list.length > 0 || anyListeners.length > 0;
     },
 
-    on<E extends EventUnion>(_listener: EventListener<E>): Emitter<EventUnion> {
+    on(listener: EventListener<EventUnion>): Emitter<EventUnion> {
+      anyListeners.push(listener);
       return this;
     },
   };

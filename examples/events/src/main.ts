@@ -1,11 +1,11 @@
+import { ImmutableHost } from '../../../dist/index.js';
 import type {
-  ImmutableHost,
   ImmutablePlugin,
   ImmutablePlugins,
   ImmutableEntities,
-} from '../../src/index.js';
-import type { Emitter, EventEntities } from './src/events.js';
-import { emitterFromEntities } from './src/events.js';
+} from '../../../dist/index.js';
+import type { Emitter, EventEntities } from './events.js';
+import { emitterFromEntities } from './events.js';
 
 class Context {
   emitter: Emitter<Events>;
@@ -49,13 +49,19 @@ const pluginA: Plugin = {
   description: 'this is plugin A',
   entities: {
     on: {
-      beforeCommandExecution: (e: BeforeCommandExecution) => {
-        e.ctx.print(`[pluginA] beforeCommandExecution command: "${e.command}"`);
+      beforeCommandExecution: (e: Events) => {
+        if (e.name === 'beforeCommandExecution') {
+          e.ctx.print(
+            `[pluginA] beforeCommandExecution command: "${e.command}"`
+          );
+        }
       },
-      afterCommandExecution: (e: AfterCommandExecution) => {
-        e.ctx.print(
-          `[pluginA] afterCommandExecution command: "${e.command}" result: "${e.result}"`
-        );
+      afterCommandExecution: (e: Events) => {
+        if (e.name === 'afterCommandExecution') {
+          e.ctx.print(
+            `[pluginA] afterCommandExecution command: "${e.command}" result: "${e.result}"`
+          );
+        }
       },
     },
     assets: {
@@ -81,15 +87,19 @@ class PluginB implements Plugin {
     this.description = description;
     this.entities = {
       on: {
-        beforeCommandExecution: (e: BeforeCommandExecution) => {
-          e.ctx.print(
-            `[pluginB] beforeCommandExecution command: "${e.command}"`
-          );
+        beforeCommandExecution: (e: Events) => {
+          if (e.name === 'beforeCommandExecution') {
+            e.ctx.print(
+              `[pluginB] beforeCommandExecution command: "${e.command}"`
+            );
+          }
         },
-        afterCommandExecution: (e: AfterCommandExecution) => {
-          e.ctx.print(
-            `[pluginB] afterCommandExecution command: "${e.command}" result: "${e.result}"`
-          );
+        afterCommandExecution: (e: Events) => {
+          if (e.name === 'afterCommandExecution') {
+            e.ctx.print(
+              `[pluginB] afterCommandExecution command: "${e.command}" result: "${e.result}"`
+            );
+          }
         },
       },
       assets: {
@@ -158,18 +168,24 @@ const host = new Host({ pluginA, pluginB });
 
 const ctx = host.context;
 
-ctx.emitter.on((e: BeforeCommandExecution) => {
-  e.ctx.print(`[main] beforeCommandExecution: "${e.command}"`);
+ctx.emitter.on((e: Events) => {
+  if (e.name === 'beforeCommandExecution') {
+    e.ctx.print(`[main] beforeCommandExecution: "${e.command}"`);
+  }
 });
 
-ctx.emitter.on((e: AfterCommandExecution) => {
-  e.ctx.print(
-    `[main] afterCommandExecution: "${e.command}" result: "${e.result}"`
-  );
+ctx.emitter.on((e: Events) => {
+  if (e.name === 'afterCommandExecution') {
+    e.ctx.print(
+      `[main] afterCommandExecution: "${e.command}" result: "${e.result}"`
+    );
+  }
 });
 
 ctx.print('Available plugins:');
-for (const [name, plugin] of Object.entries(host.plugins)) {
+for (const [name, plugin] of Object.entries(host.plugins) as Array<
+  [string, Plugin]
+>) {
   ctx.print(`- ${name}: ${plugin.description}`);
 }
 
@@ -181,7 +197,7 @@ for (const [value, uri, plugin_name] of host.entities.assets) {
   ctx.print(`- ${uri} [${plugin_name}]: "${value}"`);
 }
 
-ctx.print(`Assets "duplicate": "${host.assets('duplicate').join('", "')}"}`);
+ctx.print(`Assets "duplicate": "${host.assets('duplicate').join('", "')}"`);
 
 ctx.print('Available commands:');
 for (const [_command, name, plugin_name] of host.entities.commands) {
