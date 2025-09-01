@@ -63,9 +63,6 @@ Notes:
 
 Gotchas:
 
-- Your environment cuts shell output after 200 lines or so. Chunk longer
-  outputs. Avoid batching several commands with potentially long outputs.
-
 - Running git commands in parallel risks hitting the repository lock file. Run
   all shell commands sequentially, analyzing intermediate results.
 
