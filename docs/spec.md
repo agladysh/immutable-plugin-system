@@ -1,7 +1,7 @@
 # Specification: Immutable Plugin System
 
 - **Specification Version:** 1.1.0
-- **Document Revision:** 1.1.3
+- **Document Revision:** 1.1.4
 - **Status:** FINAL
 
 This document specifies a minimalist strongly typed immutable plugin system for
@@ -170,6 +170,15 @@ Via negativa, we're:
     level via `NonEmptyString`.
   - For the broad `string` key, ergonomics are preserved (all strings allowed at
     the type level); runtime guards still reject empty keys.
+- Numeric‑like string keys (e.g. `"0"`, `"-1"`, `"1.5"`, `"1e3"`) are rejected
+  by runtime guards to avoid ambiguity with JavaScript's coercion of numeric
+  object keys to strings. Integrations MUST use textual identifiers that are not
+  numeric‑like. (This is stricter than the type‑level exclusion of numeric keys
+  and prevents collisions caused by JavaScript coercing numeric keys to
+  strings.)
+- Entity values MUST be defined: `undefined` is forbidden. Integrations MUST
+  omit the key rather than store `undefined`. This is enforced at runtime by
+  guards, and public types exclude `undefined` from entity value types.
 
 ```ts
 type NonEmptyString<S extends string = string> = '' extends S ? never : S;
@@ -177,7 +186,7 @@ export type ImmutableEntityKey = symbol | NonEmptyString;
 
 // Keys are textual (non-empty strings) or symbols; numeric keys are forbidden
 export type ImmutableEntities<K extends string | symbol, V> = Readonly<
-  Record<K, V>
+  Record<K, NonNullable<V>>
 >;
 ```
 
@@ -224,9 +233,13 @@ type ImmutablePlugins<P extends ImmutablePlugin = ImmutablePlugin> = Readonly<
 
 type ImmutableEntityCollections<
   K extends PropertyKey,
-  T extends { [k in K]: unknown },
+  // Each entity type maps to an inner entity map (record of values)
+  T extends { [k in K]: Readonly<Record<string | symbol, unknown>> },
 > = {
-  readonly [k in K]: ImmutableEntityCollection<keyof T[k], T[k][keyof T[k]]>;
+  readonly [k in K]: ImmutableEntityCollection<
+    Extract<keyof T[k], string | symbol>,
+    T[k][keyof T[k]]
+  >;
 };
 
 type ImmutableEntityCollectionsFromPlugin<P extends ImmutablePlugin> =
@@ -491,7 +504,7 @@ for (const [ value, uri, plugin_name ] of host.entities.assets) {
   ctx.print(`- ${uri} [${plugin_name}]: "${value}"`);
 }
 
-ctx.print(`Assets "duplicate": "${host.assets('duplicate').join('", "')}"}`);
+ctx.print(`Assets "duplicate": "${host.assets('duplicate').join('", "')}"`);
 
 ctx.print('Available commands:');
 for (const [ command, name, plugin_name ] of host.entities.commands) {
@@ -535,6 +548,23 @@ No external dependencies.
 - Cutting-edge `package.json` structure.
 
 ## Document Revision History
+
+### r1.1.4 / v1.1.0
+
+- Entity keys: numeric-like strings are now explicitly rejected at runtime for
+  inner entity maps to prevent ambiguity with JavaScript numeric key coercion
+  (e.g., "0", "-1", "1.5", "1e3"). This is stricter than the type‑level
+  exclusion of numeric keys and avoids collisions. Integrations MUST use textual
+  identifiers that are not numeric-like.
+- Entity values: clarified and consolidated the rule that values MUST be defined
+  (undefined is forbidden). Public types now explicitly exclude undefined via
+  `NonNullable<V>` in the `ImmutableEntities` snippet; runtime guards enforce
+  this.
+- `ImmutableEntityCollections` snippet refined: constrained the entities record
+  to an inner record shape and used `Extract<keyof T[k], string | symbol>` for
+  key type clarity; added an explanatory comment.
+- Example fix: corrected an extra `}` in the assets print example line.
+- Editorial: minor punctuation and style consistency.
 
 ### r1.1.3 / v1.1.0
 
