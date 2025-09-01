@@ -41,11 +41,14 @@ export class ImmutableEntityCollection<K extends string | symbol, E> {
       // Iterate all own keys (string, number-as-string, symbol) exactly once
       for (const key of Reflect.ownKeys(entities) as K[]) {
         const entity = (entities as Record<PropertyKey, E>)[key as PropertyKey];
-        if (entity !== undefined) {
-          const existing = this.storage.get(key) ?? [];
-          existing.push({ entity, pluginURN });
-          this.storage.set(key, existing);
+        if (entity === undefined) {
+          throw new TypeError(
+            `entity value must be defined for key "${String(key)}" in plugin "${pluginURN}"`
+          );
         }
+        const existing = this.storage.get(key) ?? [];
+        existing.push({ entity, pluginURN });
+        this.storage.set(key, existing);
       }
     }
   }
@@ -66,21 +69,14 @@ export class ImmutableEntityCollection<K extends string | symbol, E> {
    *
    * @returns Iterator yielding [key, entities[]] tuples
    */
-  entries(): Iterator<[K, E[]]> {
+  entries(): IterableIterator<[K, E[]]> {
     const storage = this.storage;
-    const keys = Array.from(storage.keys());
-    let index = 0;
-
-    return {
-      next(): IteratorResult<[K, E[]]> {
-        if (index >= keys.length) {
-          return { done: true, value: undefined };
-        }
-        const key = keys[index++];
-        const entities = storage.get(key)!.map((item) => item.entity);
-        return { done: false, value: [key, entities] };
-      },
-    };
+    function* gen(): IterableIterator<[K, E[]]> {
+      for (const [key, list] of storage.entries()) {
+        yield [key, list.map((item) => item.entity)];
+      }
+    }
+    return gen();
   }
 
   /**

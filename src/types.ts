@@ -43,7 +43,7 @@ type _NormalizedString<S> = S extends string
   : never;
 
 export type ImmutableEntities<K extends string | symbol, V> = Readonly<
-  Record<_NormalizedString<_StringPart<K>> | _NonStringPart<K>, V>
+  Record<_NormalizedString<_StringPart<K>> | _NonStringPart<K>, NonNullable<V>>
 >;
 
 /**

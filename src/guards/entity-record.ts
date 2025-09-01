@@ -28,6 +28,13 @@ function hasNoInvalidKeys(obj: object): boolean {
         return false;
       } // disallow numeric-like keys
     }
+    // values must be defined
+    const value = (obj as Record<PropertyKey, unknown>)[
+      key as unknown as PropertyKey
+    ];
+    if (value === undefined) {
+      return false;
+    }
   }
   return true;
 }
@@ -59,7 +66,7 @@ export function assertEntityRecord(
 ): asserts value is Record<ImmutableEntityKey, unknown> {
   if (!isEntityRecord(value)) {
     throw new TypeError(
-      'entity record must be a plain object with symbol or non-empty, non-numeric string keys'
+      'entity record must be a plain object with symbol or non-empty, non-numeric string keys and defined values'
     );
   }
 }

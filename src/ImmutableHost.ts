@@ -10,6 +10,16 @@ import { assertImmutablePlugins } from './guards/plugins.js';
 import { isEntityRecord } from './guards/entity-record.js';
 
 /**
+ * Typed helper to get all own keys (including symbols) of an object.
+ * Returns keys narrowed to the object's keyof type intersected with PropertyKey.
+ */
+function ownKeys<T extends object>(
+  obj: T
+): Array<Extract<keyof T, PropertyKey>> {
+  return Reflect.ownKeys(obj as object) as Array<Extract<keyof T, PropertyKey>>;
+}
+
+/**
  * Type that creates entity collections for each entity type in the plugin.
  * Maps entity keys to their corresponding ImmutableEntityCollection types.
  * This implementation correctly handles the constraint that all entity types are records.
@@ -88,8 +98,8 @@ export class ImmutableHost<P extends ImmutablePlugin<ImmutableEntitiesRecord>> {
     // Get all unique entity type names across all plugins using efficient key iteration
     const allEntityTypes = new Set<keyof P['entities']>();
     for (const plugin of Object.values(plugins)) {
-      // Use Reflect.ownKeys to include symbol keys and coerce to declared key type
-      for (const entityType of Reflect.ownKeys(plugin.entities) as Array<
+      // Include symbol keys as entity types
+      for (const entityType of ownKeys(plugin.entities) as Array<
         keyof P['entities']
       >) {
         allEntityTypes.add(entityType);
