@@ -21,8 +21,11 @@
       size.
 - [x] Rename implementation files (and their tests) so they match what they
       export (e.g. `ImmutableEntityCollection.ts`). `types.ts` remains.
-- [ ] Amend spec (v1.1.0/r1.1.2) to require rigorous `tsd` tests. Implement said
-      tests.
+- [x] Amend spec (v1.1.0/r1.1.2) to require rigorous `tsd` tests.
+- [ ] tsd works with built project, add pnpm -s build to pretest:tsd
+- [ ] Implement rigorous `tsd` tests.
+- [x] Amend spec (v1.1.1/r1.1.3) to forbid empty string as plugin name. Refine
+      implementation, tsd and tap tests to support.
 - [ ] Add GH CI hook
 - [ ] Implement code, example and tests, all with rigorous inline documentation
 - [ ] Run `~/.cargo/bin/similarity-ts` and fix reports
