@@ -1,6 +1,5 @@
 import type {
   ImmutableEntities,
-  ImmutableEntityKey,
   ImmutableEntitiesRecord,
   ImmutablePlugin,
   ImmutablePlugins,
@@ -9,10 +8,6 @@ import type {
 import { ImmutableEntityCollection } from './ImmutableEntityCollection.js';
 import { assertImmutablePlugins } from './guards/plugins.js';
 import { isEntityRecord } from './guards/entity-record.js';
-
-// Type guard helpers moved to src/guards.ts
-
-// Plugin guard and assertion are defined in src/guards.ts
 
 /**
  * Type that creates entity collections for each entity type in the plugin.
@@ -26,8 +21,8 @@ type ImmutableEntityCollections<
   K extends PropertyKey,
   T extends { [k in K]: ImmutableEntitiesRecord[PropertyKey] },
 > = {
-  [k in K]: ImmutableEntityCollection<
-    Extract<keyof T[k], ImmutableEntityKey>,
+  readonly [k in K]: ImmutableEntityCollection<
+    Extract<keyof T[k], string | symbol>,
     T[k][keyof T[k]]
   >;
 };
@@ -70,12 +65,17 @@ export class ImmutableHost<P extends ImmutablePlugin<ImmutableEntitiesRecord>> {
    *  - `requiredEntityTypes`: if provided, each plugin must have these entity
    *    types present as own properties and valid inner records. This augments
    *    structural validation; primary enforcement remains at the type level.
+   *
+   * Typing note: The constructor accepts
+   * `readonly (keyof P['entities'])[]` for `requiredEntityTypes` since the
+   * generic `P` is known here. Standalone guard functions accept a runtime
+   * `readonly PropertyKey[]` list for the same semantics (no generic context).
    * @throws TypeError if any plugin is invalid, has mismatched URN, or is
    *  missing a required entity type specified in `options`.
    */
   constructor(
     plugins: ImmutablePlugins<P>,
-    options?: { requiredEntityTypes?: readonly PropertyKey[] }
+    options?: { requiredEntityTypes?: readonly (keyof P['entities'])[] }
   ) {
     // Validate plugins at runtime for additional type safety
     assertImmutablePlugins(plugins, options);
@@ -101,7 +101,7 @@ export class ImmutableHost<P extends ImmutablePlugin<ImmutableEntitiesRecord>> {
       // Infer inner key/value types from the plugin's declaration for this entity type
       type ET = typeof entityType;
       type EntitiesMap = P['entities'][ET];
-      type KType = Extract<keyof EntitiesMap, ImmutableEntityKey>;
+      type KType = Extract<keyof EntitiesMap, string | symbol>;
       type VType = EntitiesMap[keyof EntitiesMap];
 
       const pluginEntitiesForType = {} as Record<

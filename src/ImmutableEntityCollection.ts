@@ -1,8 +1,4 @@
-import type {
-  ImmutableEntities,
-  ImmutableEntityKey,
-  PluginURN,
-} from './types.js';
+import type { ImmutableEntities, PluginURN } from './types.js';
 
 /**
  * Internal storage item that tracks an entity with its source plugin.
@@ -29,7 +25,7 @@ interface EntityWithPlugin<E> {
  * @template K - The key type, must extend PropertyKey
  * @template E - The entity type
  */
-export class ImmutableEntityCollection<K extends ImmutableEntityKey, E> {
+export class ImmutableEntityCollection<K extends string | symbol, E> {
   /**
    * Internal storage mapping keys to arrays of entities with their plugin URNs.
    */
