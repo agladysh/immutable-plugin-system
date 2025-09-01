@@ -3,7 +3,6 @@ import { ImmutableHost } from '../src/ImmutableHost.js';
 import type { ImmutableEntityCollection } from '../src/ImmutableEntityCollection.js';
 import type {
   ImmutableEntities,
-  ImmutableEntityKey,
   ImmutablePlugin,
   PluginURN,
 } from '../src/types.js';
@@ -390,20 +389,14 @@ test('Symbol entity type support', (t) => {
 
   t.equal(
     (
-      host.entities[symbolType] as ImmutableEntityCollection<
-        ImmutableEntityKey,
-        unknown
-      >
+      host.entities[symbolType] as ImmutableEntityCollection<string, unknown>
     ).get('symKey1')[0],
     'symbol-value',
     'symbol type works'
   );
   t.equal(
     (
-      host.entities[anotherSymbol] as ImmutableEntityCollection<
-        ImmutableEntityKey,
-        unknown
-      >
+      host.entities[anotherSymbol] as ImmutableEntityCollection<string, unknown>
     ).get('anotherKey')[0],
     'another-value',
     'another symbol type works'
