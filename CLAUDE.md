@@ -38,8 +38,11 @@ Read the [specification](docs/spec.md) in full.
 - `pnpm -s test:fix` - Runs tap tests after attempting to fix lint errors
 - `pnpm -s lint` - Runs tsc, eslint, prettier, and markdownlint
 - `pnpm -s fix` - Auto-fixes eslint, prettier, and markdownlint issues
-- `pnpm -s tap` - Direct test runner without pretest hook
+- `pnpm -s tap` - Direct tap test runner without linting
 - `pnpm -s tap report` - Display test coverage report for the last test run
+- `pnpm -s tsd` - Direct tsd test runner without linting
+- `pnpm -s tsd --files test-d/types.test-d.ts` - Runs tsd directly for a given
+  file
 - `pnpm -s lefthook:precommit` - Manually run the pre-commit hook
 
 Notes:
