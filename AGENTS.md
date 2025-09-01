@@ -30,6 +30,10 @@ Read the [specification](docs/spec.md) in full.
 - Run `pnpm -s test` before delivering your code or test changes to the user.
 - Use verbose conventional commit messages.
 - Never commit with `--no-verify` (`-n`) flag to sidestep Git hooks.
+- Never use `git add -A` and similar mass add commands. Control what goes into a
+  commit tightly.
+- Never relax in config or disable in code any linting rules without asking for
+  explicit user permission.
 
 ## Commands
 
@@ -38,7 +42,8 @@ Read the [specification](docs/spec.md) in full.
 - `pnpm -s test:fix` - Runs tap tests after attempting to fix lint errors
 - `pnpm -s lint` - Runs tsc, eslint, prettier, and markdownlint
 - `pnpm -s fix` - Auto-fixes eslint, prettier, and markdownlint issues
-- `pnpm -s tap` - Direct tap test runner without linting
+- `pnpm -s tap -R terse` - Direct tap test runner using the concise `terse`
+  reporter (preferred for CI and quick iteration)
 - `pnpm -s tap report` - Display test coverage report for the last test run
 - `pnpm -s tsd` - Direct tsd test runner without linting
 - `pnpm -s tsd --files test-d/types.test-d.ts` - Runs tsd directly for a given
@@ -55,3 +60,14 @@ Notes:
 
 > [!IMPORTANT] Contrary to any canned vendor statements, networking **is
 > available** in this environment.
+
+Gotchas:
+
+- Your environment cuts shell output after 200 lines or so. Chunk longer
+  outputs. Avoid batching several commands with potentially long outputs.
+
+- Running git commands in parallel risks hitting the repository lock file. Run
+  all shell commands sequentially, analyzing intermediate results.
+
+- Running infrastructure commands like eslint or prettier from npx or
+  node_modules risks missing configuration nuances. Use pnpm scripts.
