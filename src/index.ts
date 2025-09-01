@@ -5,6 +5,7 @@ export type {
   PluginURN,
   ImmutableEntityKey,
   ImmutableEntitiesRecord,
+  NonEmptyString,
 } from './types.js';
 
 export { ImmutableEntityCollection } from './ImmutableEntityCollection.js';

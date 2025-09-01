@@ -5,25 +5,45 @@
 export type PluginURN = string;
 
 /**
- * Valid key type for inner entity maps.
- *
- * - Excludes `number` to avoid ambiguity with JS numeric key coercion.
- * - Excludes empty string `''` to prevent degenerate identifiers.
+ * Non-empty string type that excludes empty string literals.
  */
-export type ImmutableEntityKey = Exclude<PropertyKey, number | ''>;
+export type NonEmptyString<S extends string = string> = '' extends S
+  ? never
+  : S;
 
 /**
- * Type-safe record of entities mapped by keys.
- * Provides immutable entity collections with strongly typed keys and values.
+ * Valid key type for inner entity maps.
+ * Keys are textual (non-empty strings) or symbols; numeric keys are forbidden.
+ */
+export type ImmutableEntityKey = symbol | NonEmptyString;
+
+/**
+ * Type-safe record of entities mapped by keys with normalized string constraints.
  *
- * Keys are restricted to non-empty strings and symbols at runtime; this type
- * enforces the design intent by excluding `number` from acceptable key types.
+ * Goals (ergonomics + safety):
+ * - Broad `string` keys remain `Record<string, V>` for usability (do not collapse to `never`).
+ * - Literal string unions exclude the empty string at the type level via `NonEmptyString`.
+ * - Non-string keys (e.g., `symbol`) are preserved as-is.
+ * - Numeric keys are excluded by `ImmutableEntityKey`.
+ *
+ * Implementation: split `K` into its string and non-string parts. For string
+ * keys, retain `string` if the input is the broad `string`; otherwise, apply
+ * `NonEmptyString<…>` to erase `''` from literal unions. Intersect the two
+ * records to reconstruct the full map type.
  *
  * @template K - The key type, must extend ImmutableEntityKey
  * @template V - The value type for entities
  */
-export type ImmutableEntities<K extends ImmutableEntityKey, V> = Readonly<
-  Record<K, V>
+type _StringPart<K> = Extract<K, string>;
+type _NonStringPart<K> = Exclude<K, string>;
+type _NormalizedString<S> = S extends string
+  ? string extends S
+    ? string
+    : NonEmptyString<S>
+  : never;
+
+export type ImmutableEntities<K extends string | symbol, V> = Readonly<
+  Record<_NormalizedString<_StringPart<K>> | _NonStringPart<K>, V>
 >;
 
 /**
@@ -33,7 +53,7 @@ export type ImmutableEntities<K extends ImmutableEntityKey, V> = Readonly<
  * @template V - The value type stored in entity maps
  */
 export type ImmutableEntitiesRecord<
-  K extends ImmutableEntityKey = ImmutableEntityKey,
+  K extends string | symbol = string | symbol,
   V = unknown,
 > = Readonly<Record<PropertyKey, ImmutableEntities<K, V>>>;
 
