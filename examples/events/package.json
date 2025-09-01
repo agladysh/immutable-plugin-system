@@ -1,0 +1,14 @@
+{
+  "name": "immutable-plugin-system-events-example",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Example CLI demonstrating immutable-plugin-system",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/main.js"
+  }
+}

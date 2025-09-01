@@ -1,0 +1,35 @@
+Available plugins:
+- pluginA: this is plugin A
+- pluginB: this is plugin B
+PluginA name: pluginA
+Available assets:
+- foo [pluginA]: "this is `foo`"
+- duplicate [pluginA]: "this is duplicate asset from PluginA"
+- duplicate [pluginB]: "this is duplicate asset from PluginB"
+- baz [pluginB]: "this is `baz`"
+Assets "duplicate": "this is duplicate asset from PluginA", "this is duplicate asset from PluginB"
+Available commands:
+[pluginA] beforeCommandExecution command: "bar"
+[pluginB] beforeCommandExecution command: "bar"
+[main] beforeCommandExecution: "bar"
+this is bar(hello)
+[pluginA] afterCommandExecution command: "bar" result: "`bar` return value"
+[pluginB] afterCommandExecution command: "bar" result: "`bar` return value"
+[main] afterCommandExecution: "bar" result: "`bar` return value"
+- bar [pluginA]: `bar` return value
+[pluginA] beforeCommandExecution command: "quo"
+[pluginB] beforeCommandExecution command: "quo"
+[main] beforeCommandExecution: "quo"
+this is quo(hello)
+[pluginA] afterCommandExecution command: "quo" result: "`quo` return value"
+[pluginB] afterCommandExecution command: "quo" result: "`quo` return value"
+[main] afterCommandExecution: "quo" result: "`quo` return value"
+- quo [pluginB]: `quo` return value
+[pluginA] beforeCommandExecution command: "bar"
+[pluginB] beforeCommandExecution command: "bar"
+[main] beforeCommandExecution: "bar"
+this is bar(world)
+[pluginA] afterCommandExecution command: "bar" result: "`bar` return value"
+[pluginB] afterCommandExecution command: "bar" result: "`bar` return value"
+[main] afterCommandExecution: "bar" result: "`bar` return value"
+Running "bar": `bar` return value
