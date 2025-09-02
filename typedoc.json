@@ -1,6 +1,6 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "plugin": ["typedoc-plugin-inline-sources", "typedoc-plugin-coverage"],
+  "plugin": ["typedoc-plugin-markdown", "typedoc-plugin-coverage"],
   "cleanOutputDir": true,
   "tsconfig": "./tsconfig.build.json",
   "entryPoints": ["./src/index.ts"],
@@ -17,7 +17,6 @@
     "tsx",
     "typescript"
   ],
-  "alwaysCreateEntryPointModule": true,
   "includeVersion": true,
   "excludePrivate": true,
   "excludeProtected": false,
@@ -53,7 +52,8 @@
       "path": "./docs/api/",
       "options": {
         "githubPages": false,
-        "hidePageHeader": true
+        "hidePageHeader": true,
+        "router": "member"
       }
     }
   ]

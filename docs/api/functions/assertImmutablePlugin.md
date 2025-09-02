@@ -1,10 +1,10 @@
-[immutable-plugin-system](../../README.md) / [index](../README.md) / assertImmutablePlugin
+[immutable-plugin-system](../README.md) / assertImmutablePlugin
 
 # Function: assertImmutablePlugin()
 
 > **assertImmutablePlugin**(`plugin`, `options?`): asserts plugin is ImmutablePlugin\<Readonly\<Record\<PropertyKey, Readonly\<Record\<string \| symbol, \{\}\>\>\>\>\>
 
-Defined in: [guards/plugin.ts:67](https://github.com/agladysh/immutable-plugin-system/blob/6e42ed226f57386126fa674261cc4cffcef8c585/src/guards/plugin.ts#L67)
+Defined in: [guards/plugin.ts:67](https://github.com/agladysh/immutable-plugin-system/blob/1e3844304b71a6cb1d44c2f57e31e6fc81a4ed82/src/guards/plugin.ts#L67)
 
 Assertion over a single plugin. Structural validation only by default;
 optionally enforces presence and validity of `options.requiredEntityTypes`.

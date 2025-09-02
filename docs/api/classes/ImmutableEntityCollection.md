@@ -1,8 +1,8 @@
-[immutable-plugin-system](../../README.md) / [index](../README.md) / ImmutableEntityCollection
+[immutable-plugin-system](../README.md) / ImmutableEntityCollection
 
 # Class: ImmutableEntityCollection\<K, E\>
 
-Defined in: [ImmutableEntityCollection.ts:28](https://github.com/agladysh/immutable-plugin-system/blob/6e42ed226f57386126fa674261cc4cffcef8c585/src/ImmutableEntityCollection.ts#L28)
+Defined in: [ImmutableEntityCollection.ts:28](https://github.com/agladysh/immutable-plugin-system/blob/1e3844304b71a6cb1d44c2f57e31e6fc81a4ed82/src/ImmutableEntityCollection.ts#L28)
 
 Implementation of immutable entity collections that provide convenient iteration methods.
 Wraps Map<K, E[]> functionality with additional utility methods for working with entities.
@@ -28,7 +28,7 @@ The entity type
 
 > **new ImmutableEntityCollection**\<`K`, `E`\>(`pluginEntities`): `ImmutableEntityCollection`\<`K`, `E`\>
 
-Defined in: [ImmutableEntityCollection.ts:39](https://github.com/agladysh/immutable-plugin-system/blob/6e42ed226f57386126fa674261cc4cffcef8c585/src/ImmutableEntityCollection.ts#L39)
+Defined in: [ImmutableEntityCollection.ts:39](https://github.com/agladysh/immutable-plugin-system/blob/1e3844304b71a6cb1d44c2f57e31e6fc81a4ed82/src/ImmutableEntityCollection.ts#L39)
 
 Creates a new ImmutableEntityCollection from plugin entities.
 
@@ -50,7 +50,7 @@ Record of plugin URN to entities for that plugin
 
 > **\[iterator\]**(): `Iterator`\<\[`E`, `K`, `string`\]\>
 
-Defined in: [ImmutableEntityCollection.ts:137](https://github.com/agladysh/immutable-plugin-system/blob/6e42ed226f57386126fa674261cc4cffcef8c585/src/ImmutableEntityCollection.ts#L137)
+Defined in: [ImmutableEntityCollection.ts:137](https://github.com/agladysh/immutable-plugin-system/blob/1e3844304b71a6cb1d44c2f57e31e6fc81a4ed82/src/ImmutableEntityCollection.ts#L137)
 
 Makes the collection iterable over individual entities with metadata.
 Each iteration yields a tuple of [entity, key, pluginURN].
@@ -67,7 +67,7 @@ Iterator yielding [entity, key, pluginURN] tuples
 
 > **entries**(): `IterableIterator`\<\[`K`, `E`[]\]\>
 
-Defined in: [ImmutableEntityCollection.ts:72](https://github.com/agladysh/immutable-plugin-system/blob/6e42ed226f57386126fa674261cc4cffcef8c585/src/ImmutableEntityCollection.ts#L72)
+Defined in: [ImmutableEntityCollection.ts:72](https://github.com/agladysh/immutable-plugin-system/blob/1e3844304b71a6cb1d44c2f57e31e6fc81a4ed82/src/ImmutableEntityCollection.ts#L72)
 
 Returns an iterator over all key-entity array pairs.
 
@@ -83,7 +83,7 @@ Iterator yielding [key, entities[]] tuples
 
 > **flat**(): \[`E`, `K`, `string`\][]
 
-Defined in: [ImmutableEntityCollection.ts:88](https://github.com/agladysh/immutable-plugin-system/blob/6e42ed226f57386126fa674261cc4cffcef8c585/src/ImmutableEntityCollection.ts#L88)
+Defined in: [ImmutableEntityCollection.ts:88](https://github.com/agladysh/immutable-plugin-system/blob/1e3844304b71a6cb1d44c2f57e31e6fc81a4ed82/src/ImmutableEntityCollection.ts#L88)
 
 Flattens all entities into a single array with metadata.
 Each entity is returned as a tuple with the entity, its key, and plugin URN.
@@ -100,7 +100,7 @@ Array of [entity, key, pluginURN] tuples
 
 > **flatMap**\<`U`\>(`fn`): `U`[]
 
-Defined in: [ImmutableEntityCollection.ts:121](https://github.com/agladysh/immutable-plugin-system/blob/6e42ed226f57386126fa674261cc4cffcef8c585/src/ImmutableEntityCollection.ts#L121)
+Defined in: [ImmutableEntityCollection.ts:121](https://github.com/agladysh/immutable-plugin-system/blob/1e3844304b71a6cb1d44c2f57e31e6fc81a4ed82/src/ImmutableEntityCollection.ts#L121)
 
 Flat maps over individual entities, applying the transform function to each entity.
 
@@ -132,7 +132,7 @@ Array of transformed values
 
 > **get**(`key`): `E`[]
 
-Defined in: [ImmutableEntityCollection.ts:62](https://github.com/agladysh/immutable-plugin-system/blob/6e42ed226f57386126fa674261cc4cffcef8c585/src/ImmutableEntityCollection.ts#L62)
+Defined in: [ImmutableEntityCollection.ts:62](https://github.com/agladysh/immutable-plugin-system/blob/1e3844304b71a6cb1d44c2f57e31e6fc81a4ed82/src/ImmutableEntityCollection.ts#L62)
 
 Retrieves all entities associated with the given key.
 
@@ -156,7 +156,7 @@ Array of entities for the key, empty array if key not found
 
 > **map**\<`U`\>(`fn`): `U`[]
 
-Defined in: [ImmutableEntityCollection.ts:105](https://github.com/agladysh/immutable-plugin-system/blob/6e42ed226f57386126fa674261cc4cffcef8c585/src/ImmutableEntityCollection.ts#L105)
+Defined in: [ImmutableEntityCollection.ts:105](https://github.com/agladysh/immutable-plugin-system/blob/1e3844304b71a6cb1d44c2f57e31e6fc81a4ed82/src/ImmutableEntityCollection.ts#L105)
 
 Maps over entity arrays by key, applying the transform function to each group.
 

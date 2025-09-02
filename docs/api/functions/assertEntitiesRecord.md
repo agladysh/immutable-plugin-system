@@ -1,10 +1,10 @@
-[immutable-plugin-system](../../README.md) / [index](../README.md) / assertEntitiesRecord
+[immutable-plugin-system](../README.md) / assertEntitiesRecord
 
 # Function: assertEntitiesRecord()
 
 > **assertEntitiesRecord**(`value`): asserts value is Readonly\<Record\<PropertyKey, Readonly\<Record\<string \| symbol, \{\}\>\>\>\>
 
-Defined in: [guards/entities-record.ts:36](https://github.com/agladysh/immutable-plugin-system/blob/6e42ed226f57386126fa674261cc4cffcef8c585/src/guards/entities-record.ts#L36)
+Defined in: [guards/entities-record.ts:36](https://github.com/agladysh/immutable-plugin-system/blob/1e3844304b71a6cb1d44c2f57e31e6fc81a4ed82/src/guards/entities-record.ts#L36)
 
 Assertion variant of `isEntitiesRecord` that throws on failure.
 

@@ -1,10 +1,10 @@
-[immutable-plugin-system](../../README.md) / [index](../README.md) / NonEmptyString
+[immutable-plugin-system](../README.md) / NonEmptyString
 
 # Type Alias: NonEmptyString\<S\>
 
 > **NonEmptyString**\<`S`\> = `""` *extends* `S` ? `never` : `S`
 
-Defined in: [types.ts:18](https://github.com/agladysh/immutable-plugin-system/blob/6e42ed226f57386126fa674261cc4cffcef8c585/src/types.ts#L18)
+Defined in: [types.ts:18](https://github.com/agladysh/immutable-plugin-system/blob/1e3844304b71a6cb1d44c2f57e31e6fc81a4ed82/src/types.ts#L18)
 
 Compile-time erasure of the empty string literal from a string type.
 
