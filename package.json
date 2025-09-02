@@ -33,7 +33,8 @@
   "license": "MIT",
   "packageManager": "pnpm@10.13.1",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build:tsc": "tsc -p tsconfig.build.json",
+    "build": "pnpm -s build:tsc && pnpm -s build:docs",
     "build:examples": "tsc -p examples/events/tsconfig.json",
     "clean:dist": "rm -rf dist examples/**/dist",
     "clean:ts": "rm -f tsconfig.*.tsbuildinfo",
@@ -56,7 +57,11 @@
     "fix:markdownlint": "markdownlint --ignore '**/node_modules/**/*' --fix '**/*.md'",
     "fix": "pnpm -s run fix:eslint && pnpm -s run fix:prettier && pnpm -s run fix:markdownlint",
     "lefthook:precommit": "pnpm -s exec lefthook run pre-commit",
-    "link": "pnpm uninstall -g immutable-plugin-system || true && pnpm link --global \"$(pwd)\""
+    "link": "pnpm uninstall -g immutable-plugin-system || true && pnpm link --global \"$(pwd)\"",
+    "build:docs:md": "typedoc --plugin typedoc-plugin-markdown --out docs/api",
+    "build:docs:html": "typedoc --out site",
+    "clean:docs": "rm -rf docs/api site",
+    "build:docs": "pnpm -s clean:docs && pnpm -s build:docs:md && pnpm -s build:docs:html"
   },
   "tap": {
     "coverage-map": "./tap.coverage-map.mjs"
@@ -71,8 +76,10 @@
     "prettier": "^3.6.2",
     "tap": "^21.1.0",
     "tsc-files": "^1.1.4",
+    "tsd": "^0.31.1",
+    "typedoc": "^0.28.12",
+    "typedoc-plugin-markdown": "^4.8.1",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.40.0",
-    "tsd": "^0.31.1"
+    "typescript-eslint": "^8.40.0"
   }
 }

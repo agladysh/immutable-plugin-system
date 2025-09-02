@@ -43,6 +43,10 @@ type ImmutableEntityCollections<
  *
  * @template P - The plugin type, must extend ImmutablePlugin
  */
+/**
+ * @internal Helper alias used to derive the entity collections mapping from a
+ * plugin's entities definition.
+ */
 type ImmutableEntityCollectionsFromPlugin<
   P extends ImmutablePlugin<ImmutableEntitiesRecord>,
 > = ImmutableEntityCollections<keyof P['entities'], P['entities']>;

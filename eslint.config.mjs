@@ -5,7 +5,13 @@ import eslintComments from 'eslint-plugin-eslint-comments';
 
 export default tseslint.config(
   {
-    ignores: ['dist/**', 'node_modules/**', 'examples/**/dist/**'],
+    ignores: [
+      'dist/**',
+      'node_modules/**',
+      'examples/**/dist/**',
+      'docs/api/**',
+      'site/**',
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

@@ -47,14 +47,15 @@ export type ImmutableEntityKey = symbol | NonEmptyString;
  * @template K - The key type, must extend ImmutableEntityKey
  * @template V - The value type for entities
  */
-/** String component of a key union. */
+/** @internal String component of a key union. */
 type _StringPart<K> = Extract<K, string>;
-/** Non-string component (e.g., symbol) of a key union. */
+/** @internal Non-string component (e.g., symbol) of a key union. */
 type _NonStringPart<K> = Exclude<K, string>;
 /**
  * Normalize string keys:
  * - keep broad `string` as-is for ergonomics;
  * - remove `''` from literal unions for correctness.
+ * @internal
  */
 type _NormalizedString<S> = S extends string
   ? string extends S

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["src/index.ts"],
+  "tsconfig": "tsconfig.json",
+  "name": "immutable-plugin-system",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeInternal": false,
+  "categorizeByGroup": true,
+  "readme": "docs/typedoc-root.md",
+  "validation": {
+    "notDocumented": false,
+    "notExported": false
+  }
+}
