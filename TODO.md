@@ -31,7 +31,7 @@
       of scope, (b) by convention (integrations must guarantee, we do not
       check), (c) we enforce, (d) other
 - [x] Implement code, example and tests, all with rigorous inline documentation
-- [ ] Run `~/.cargo/bin/similarity-ts` and fix reports
+- [x] Run `~/.cargo/bin/similarity-ts` and fix reports
 - [ ] Identify and clean up any transient change history comments in the code,
       and similar AI-generated crud
 - [ ] Run `vibe-check` and skeptically triage its output
