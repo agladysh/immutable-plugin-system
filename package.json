@@ -42,7 +42,7 @@
     "clean:reports": "rm -rf .tap .nyc_output coverage",
     "clean:docs": "rm -rf docs/api site",
     "clean": "pnpm -s run clean:dist && pnpm -s run clean:ts && pnpm -s run clean:reports && pnpm -s run clean:docs",
-    "clean:all": "rm -rf node_modules examples/**/node_modules && pnpm -s run clean:all",
+    "clean:all": "rm -rf node_modules examples/**/node_modules && pnpm -s run clean",
     "test:tsd": "pnpm -s build && tsd",
     "test:tap": "pnpm -s run build:examples && tap",
     "test:all": "pnpm -s run test:tsd && pnpm -s run test:tap",
