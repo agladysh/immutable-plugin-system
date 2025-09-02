@@ -37,6 +37,7 @@
   "treatValidationWarningsAsErrors": true,
   "treatWarningsAsErrors": true,
   "readme": "none",
+  "gitRevision": "main",
   "outputs": [
     {
       "name": "html",
