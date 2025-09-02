@@ -17,7 +17,7 @@ class Context {
     this.emitter = emitter;
   }
   print(text: string): void {
-    globalThis.process.stdout.write(`${text}\n`);
+    process.stdout.write(`${text}\n`);
   }
 }
 
