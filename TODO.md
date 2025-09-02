@@ -37,17 +37,19 @@
 - [x] Run `vibe-check` and skeptically triage its output
 - [x] Rigorously review the code, examples, and tests
 - [x] Generate JSDoc documentation. Pick modern generator that ideally would
-      give us Markdown in docs/ as well as a GitHub pages website later (see
+      give us Markdown in `docs/` as well as a GitHub pages website later (see
       below).
-- [x] Add and configure typedoc-plugin-coverage.
+- [x] Add and configure `typedoc-plugin-coverage`.
 - [x] Switch to TSDoc, update comment syntax, replace all JSDoc mentions (except
-      in this file above) to TSDoc, configure strict eslint-plugin-tsdoc, and
+      in this file above) to TSDoc, configure strict `eslint-plugin-tsdoc`, and
       fix any violations.
-- [x] Move ./tap.coverage-map.mjs to scripts/
+- [x] Move `./tap.coverage-map.mjs` to `scripts/`
 - [x] Write rigorous [README.md](README.md)
-- [ ] Add documentation coverage badge `docs/api/coverage.svg` to README.md
-- [ ] Figure out how to add test coverage badge to README.md
-- [ ] Any other idiomatic badges we should add?
+- [x] Add documentation coverage badge `docs/api/coverage.svg` to
+      [README.md](README.md)
+- [ ] Add test coverage badge to [README.md](README.md)
+- [ ] Add CI badge to [README.md](README.md)
+- [ ] Add TypeScript badge to [README.md](README.md)
 - [ ] Write rigorous [examples/README.md](examples/README.md)
 - [ ] Setup GH pages with hook on tag push
 - [ ] Setup GH npm publish hook on tag push

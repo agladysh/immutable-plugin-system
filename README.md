@@ -1,5 +1,10 @@
 # Immutable Plugin System (TypeScript, Node.js ≥22)
 
+[![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
+![Documentation coverage](docs/api/coverage.svg)
+![Test coverage](https://img.shields.io/badge/coverage-100%25-green.svg)
+![CI](https://github.com/agladysh/immutable-plugin-system/actions/workflows/ci.yml/badge.svg)
+
 Minimalist, strongly typed, immutable plugin system.
 
 - Zero runtime dependencies
