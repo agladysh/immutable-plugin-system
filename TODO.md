@@ -34,7 +34,7 @@
 - [x] Run `~/.cargo/bin/similarity-ts` and fix reports
 - [x] Identify and clean up any transient change history comments in the code,
       and similar AI-generated crud
-- [ ] Run `vibe-check` and skeptically triage its output
+- [x] Run `vibe-check` and skeptically triage its output
 - [x] Rigorously review the code, examples, and tests
 - [ ] Generate documentation
 - [ ] Write [README.md](README.md)
