@@ -181,19 +181,6 @@ new ImmutableHost<P>(
 );
 ```
 
-## Example: Events
-
-An end‑to‑end, didactic example lives in `examples/events/` (with tests):
-
-- Build: `pnpm -s build:examples`
-- Run (after build): `node examples/events/dist/main.js`
-
-It demonstrates custom entity types (assets, commands, event listeners) and
-event emission.
-
-Note: the example README is a work‑in‑progress; the example itself is complete,
-built in CI, and validated by the test suite.
-
 ## Development
 
 - Install deps: `pnpm -s install`
