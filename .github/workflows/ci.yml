@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enable Corepack (repo-pinned pnpm)
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm -s install
+
+      - name: Lint (tsc, eslint, prettier, markdownlint)
+        run: pnpm -s lint
+
+      - name: Build example(s)
+        run: pnpm -s run build:examples
+
+      - name: Run tap tests (terse)
+        run: pnpm -s tap -R terse
+
+      - name: Run tsd type tests
+        run: pnpm -s test:tsd
