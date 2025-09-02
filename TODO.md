@@ -52,5 +52,8 @@
 - [ ] Setup GH pages with hook on tag push
 - [ ] Setup GH npm publish hook on tag push
 - [ ] Setup GH release on tag push
+- [ ] Consider to lower Node version in package.json, if code allows
+- [ ] Prepare `package.json` for publication, enable using other package
+      managers on installation
 - [ ] Prepare release 1.0.0-rc1 with proper [CHANGELOG.md](CHANGELOG.md)
 - [ ] Tag v1.0.0-rc1 with -m from [CHANGELOG.md](CHANGELOG.md) entry
