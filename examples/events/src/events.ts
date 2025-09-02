@@ -3,30 +3,61 @@ import {
   type ImmutableEntities,
 } from '../../../dist/index.js';
 
+/**
+ * Unique identifier for an event in the example event system.
+ * Narrowed to `string` for simplicity in the example.
+ */
 export type EventURN = string;
 
+/**
+ * Example event envelope.
+ *
+ * @template T - Event name (URN) literal that identifies the event kind
+ */
 export interface Event<T extends EventURN> {
+  /** Event name (URN) that discriminates the event union. */
   readonly name: T;
 }
 
 // Bivariant listener type to allow assigning narrower event handlers to
 // broader unions (sufficient for this example module).
 type _Bivariant<T> = { bivarianceHack: T }['bivarianceHack'];
+
+/**
+ * Listener for a specific event type. Uses bivariant function parameter to
+ * allow assigning narrower listeners to a broader union in this example.
+ */
 export type EventListener<E extends Event<EventURN>> = _Bivariant<
   (event: E) => void
 >;
 
+/**
+ * Mapping of event name literals to their event payload types.
+ *
+ * @template EventUnion - Union of supported events
+ * @template K - Event names; defaults to the union of `EventUnion['name']`
+ */
 export type Events<
   EventUnion extends Event<EventURN>,
   K extends EventUnion['name'] = EventUnion['name'],
 > = Record<K, EventUnion>;
 
 // Map each event name to its listener; value type is the union listener.
+/**
+ * Entity map compatible with the immutable plugin system for events: maps each
+ * event name to its listener function. The value type is the union listener to
+ * support heterogeneous handler signatures across the union.
+ */
 export type EventEntities<EventUnion extends Event<EventURN>> =
   ImmutableEntities<EventUnion['name'], EventListener<EventUnion>>;
 
+/**
+ * Minimal synchronous event emitter used by the example host.
+ */
 export interface Emitter<EventUnion extends Event<EventURN>> {
+  /** Emit a concrete event to all matching listeners. Returns true if any fired. */
   emit(event: EventUnion): boolean;
+  /** Register a listener that receives all events of the union. */
   on(listener: EventListener<EventUnion>): this;
 }
 
@@ -40,11 +71,10 @@ function forEachEntry<K extends string, V>(
 }
 
 /**
- * Heuristic check for an `ImmutableEntityCollection` of event listeners.
+ * Heuristic predicate for an `ImmutableEntityCollection` of event listeners.
  *
- * Notes (example scope): This is intentionally lightweight runtime probing
- * used only for the example module. Real integrations should validate against
- * an explicit schema.
+ * Notes (example scope): intentionally lightweight runtime probing used only in
+ * the example. Real integrations should validate against an explicit schema.
  */
 function isListenerCollection<EventUnion extends Event<EventURN>>(
   value: unknown
@@ -66,11 +96,10 @@ function isListenerCollection<EventUnion extends Event<EventURN>>(
 }
 
 /**
- * Minimal shape check for an entities record mapping event names to listeners.
+ * Minimal predicate for an entities record mapping event names to listeners.
  *
- * Notes (example scope): This validates that all enumerable values are
- * functions; it is sufficient for the example. Prefer explicit schema in real
- * integrations.
+ * Notes (example scope): validates all enumerable values are functions; this is
+ * sufficient for the example. Prefer an explicit schema in real integrations.
  */
 function isEventEntitiesRecord<EventUnion extends Event<EventURN>>(
   value: unknown
@@ -86,6 +115,11 @@ function isEventEntitiesRecord<EventUnion extends Event<EventURN>>(
   return true;
 }
 
+/**
+ * Construct an example emitter from either an entities record or a discovered
+ * immutable entity collection. Both inputs are accepted to showcase integration
+ * ergonomics with the library.
+ */
 export function emitterFromEntities<EventUnion extends Event<EventURN>>(
   entities:
     | EventEntities<EventUnion>

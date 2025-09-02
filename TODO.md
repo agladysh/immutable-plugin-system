@@ -30,7 +30,7 @@
 - [x] Figure out and document position on individual asset immutability: (a) out
       of scope, (b) by convention (integrations must guarantee, we do not
       check), (c) we enforce, (d) other
-- [ ] Implement code, example and tests, all with rigorous inline documentation
+- [x] Implement code, example and tests, all with rigorous inline documentation
 - [ ] Run `~/.cargo/bin/similarity-ts` and fix reports
 - [ ] Identify and clean up any transient change history comments in the code,
       and similar AI-generated crud

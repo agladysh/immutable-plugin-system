@@ -7,6 +7,10 @@ import type {
 import type { Emitter, EventEntities } from './events.js';
 import { emitterFromEntities } from './events.js';
 
+/**
+ * Execution context passed to commands and event handlers in the example.
+ * Provides a synchronous `print` utility and the event `emitter`.
+ */
 class Context {
   emitter: Emitter<Events>;
   constructor(emitter: Emitter<Events>) {
@@ -17,20 +21,28 @@ class Context {
   }
 }
 
+/**
+ * Command entity signature for the example.
+ */
 type Command = (ctx: Context, ...args: string[]) => string;
 
+/**
+ * Concrete entities schema for the example host and plugins.
+ */
 type Entities = {
   assets: ImmutableEntities<string, string>;
   commands: ImmutableEntities<string, Command>;
   on: EventEntities<Events>;
 };
 
+/** Event emitted before command execution. */
 type BeforeCommandExecution = {
   name: 'beforeCommandExecution';
   ctx: Context;
   command: string;
 };
 
+/** Event emitted after command execution. */
 type AfterCommandExecution = {
   name: 'afterCommandExecution';
   ctx: Context;
@@ -38,12 +50,17 @@ type AfterCommandExecution = {
   result: string;
 };
 
+/** Union of example events handled by the emitter. */
 type Events = BeforeCommandExecution | AfterCommandExecution;
 
+/** Example plugin type that extends the library plugin with a description. */
 interface Plugin extends ImmutablePlugin<Entities> {
   description: string;
 }
 
+/**
+ * Simple example plugin implemented as a value object.
+ */
 const pluginA: Plugin = {
   name: 'pluginA',
   description: 'this is plugin A',
@@ -77,6 +94,9 @@ const pluginA: Plugin = {
   },
 };
 
+/**
+ * Example plugin implemented as a class.
+ */
 class PluginB implements Plugin {
   readonly name: string;
   readonly description: string;
@@ -118,6 +138,10 @@ class PluginB implements Plugin {
 
 const pluginB = new PluginB('pluginB', 'this is plugin B');
 
+/**
+ * Example host that composes the immutable host with a typed context and
+ * validates command uniqueness during construction.
+ */
 class Host extends ImmutableHost<Plugin> {
   context: Context;
 
