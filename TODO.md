@@ -47,9 +47,9 @@
 - [x] Write rigorous [README.md](README.md)
 - [x] Add documentation coverage badge `docs/api/coverage.svg` to
       [README.md](README.md)
-- [ ] Add test coverage badge to [README.md](README.md)
-- [ ] Add CI badge to [README.md](README.md)
-- [ ] Add TypeScript badge to [README.md](README.md)
+- [x] Add test coverage badge to [README.md](README.md)
+- [x] Add CI badge to [README.md](README.md)
+- [x] Add TypeScript badge to [README.md](README.md)
 - [ ] Write rigorous [examples/README.md](examples/README.md)
 - [ ] Setup GH pages with hook on tag push
 - [ ] Setup GH npm publish hook on tag push
