@@ -1,7 +1,7 @@
 # Specification: Immutable Plugin System
 
 - **Specification Version:** 1.1.0
-- **Document Revision:** 1.1.5
+- **Document Revision:** 1.1.6
 - **Status:** FINAL
 
 This document specifies a minimalist strongly typed immutable plugin system for
@@ -268,7 +268,7 @@ export class ImmutableHost<P extends ImmutablePlugin> {
 
 ## Example
 
-A simple didactic usage example is included in [`examples/`](../examples/):
+A simple didactic usage example is included:
 
 - Three entity types:
   - command: a uniquely named stateless function,
@@ -558,6 +558,10 @@ No external dependencies.
 - Cutting-edge `package.json` structure.
 
 ## Document Revision History
+
+### r1.1.6 / v1.1.0
+
+- Removed link to example implementation: out of scope of the document.
 
 ### r1.1.5 / v1.1.0
 
