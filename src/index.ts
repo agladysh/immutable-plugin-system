@@ -9,7 +9,11 @@ export type {
 } from './types.js';
 
 export { ImmutableEntityCollection } from './ImmutableEntityCollection.js';
-export { ImmutableHost } from './ImmutableHost.js';
+export {
+  ImmutableHost,
+  type ImmutableEntityCollections,
+  type ImmutableEntityCollectionsFromPlugin,
+} from './ImmutableHost.js';
 export { isPlainObject, assertPlainObject } from './guards/plain-object.js';
 export { isEntityRecord, assertEntityRecord } from './guards/entity-record.js';
 export {

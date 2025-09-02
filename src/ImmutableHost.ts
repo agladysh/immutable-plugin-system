@@ -27,7 +27,7 @@ function ownKeys<T extends object>(
  * @template K - The entity key type, must extend PropertyKey
  * @template T - The entity types record, where each value must be a record
  */
-type ImmutableEntityCollections<
+export type ImmutableEntityCollections<
   K extends PropertyKey,
   T extends { [k in K]: ImmutableEntitiesRecord[PropertyKey] },
 > = {
@@ -44,10 +44,10 @@ type ImmutableEntityCollections<
  * @template P - The plugin type, must extend ImmutablePlugin
  */
 /**
- * @internal Helper alias used to derive the entity collections mapping from a
+ * Helper alias used to derive the entity collections mapping from a
  * plugin's entities definition.
  */
-type ImmutableEntityCollectionsFromPlugin<
+export type ImmutableEntityCollectionsFromPlugin<
   P extends ImmutablePlugin<ImmutableEntitiesRecord>,
 > = ImmutableEntityCollections<keyof P['entities'], P['entities']>;
 
