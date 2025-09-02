@@ -4,7 +4,7 @@
 
 > **isImmutablePlugin**(`plugin`, `options?`): plugin is ImmutablePlugin\<Readonly\<Record\<PropertyKey, Readonly\<Record\<string \| symbol, \{\}\>\>\>\>\>
 
-Defined in: [guards/plugin.ts:23](https://github.com/agladysh/immutable-plugin-system/blob/1e3844304b71a6cb1d44c2f57e31e6fc81a4ed82/src/guards/plugin.ts#L23)
+Defined in: [guards/plugin.ts:23](https://github.com/agladysh/immutable-plugin-system/blob/main/src/guards/plugin.ts#L23)
 
 Type guard for ImmutablePlugin shape with optional enforcement of required entity types.
 
