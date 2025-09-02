@@ -227,15 +227,6 @@ recommendations.
   standard `Map` insertion order semantics and is not a stability guarantee
   across different plugin sets.
 
-## Out of Scope
-
-- Plugin discovery.
-- Plugin ordering and dependency resolution.
-- Plugin/host configuration.
-
-These are integration concerns; see the specification for discussion and
-recommendations.
-
 ## Contributing
 
 - Requirements: Node.js ≥22, pnpm ≥10.
