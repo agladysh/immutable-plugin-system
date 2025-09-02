@@ -35,6 +35,10 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "build:examples": "tsc -p examples/events/tsconfig.json",
+    "clean:dist": "rm -rf dist examples/**/dist",
+    "clean:ts": "rm -f tsconfig.*.tsbuildinfo",
+    "clean:reports": "rm -rf .tap .nyc_output coverage",
+    "clean": "pnpm -s run clean:dist && pnpm -s run clean:ts && pnpm -s run clean:reports",
     "test:tsd": "pnpm -s build && tsd",
     "test:tap": "pnpm -s run build:examples && tap",
     "test:all": "pnpm -s run test:tsd && pnpm -s run test:tap",
