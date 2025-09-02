@@ -62,7 +62,7 @@
     "link": "pnpm uninstall -g immutable-plugin-system || true && pnpm link --global \"$(pwd)\""
   },
   "tap": {
-    "coverage-map": "./tap.coverage-map.mjs"
+    "coverage-map": "./scripts/tap.coverage-map.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.34.0",

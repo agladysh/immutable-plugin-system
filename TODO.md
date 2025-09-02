@@ -43,7 +43,7 @@
 - [x] Switch to TSDoc, update comment syntax, replace all JSDoc mentions (except
       in this file above) to TSDoc, configure strict eslint-plugin-tsdoc, and
       fix any violations.
-- [ ] Move ./tap.coverage-map.mjs to scripts/
+- [x] Move ./tap.coverage-map.mjs to scripts/
 - [ ] Write rigorous [README.md](README.md)
 - [ ] Add documentation coverage badge `docs/api/coverage.svg` to README.md
 - [ ] Figure out how to add test coverage badge to README.md
