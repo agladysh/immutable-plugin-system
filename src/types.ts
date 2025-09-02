@@ -7,6 +7,14 @@ export type PluginURN = string;
 /**
  * Non-empty string type that excludes empty string literals.
  */
+/**
+ * Compile-time erasure of the empty string literal from a string type.
+ *
+ * Notes:
+ * - For the broad `string`, the empty string remains allowed at the type level
+ *   (ergonomics). Runtime guards still reject empty keys where applicable.
+ * - For literal unions, `''` is excluded precisely.
+ */
 export type NonEmptyString<S extends string = string> = '' extends S
   ? never
   : S;
@@ -14,6 +22,11 @@ export type NonEmptyString<S extends string = string> = '' extends S
 /**
  * Valid key type for inner entity maps.
  * Keys are textual (non-empty strings) or symbols; numeric keys are forbidden.
+ */
+/**
+ * Alias for the allowed inner map keys (symbol or non-empty string).
+ * Numeric keys are intentionally excluded by design; numeric-like strings are
+ * rejected by runtime guards to avoid JS coercion ambiguity.
  */
 export type ImmutableEntityKey = symbol | NonEmptyString;
 
@@ -34,14 +47,24 @@ export type ImmutableEntityKey = symbol | NonEmptyString;
  * @template K - The key type, must extend ImmutableEntityKey
  * @template V - The value type for entities
  */
+/** String component of a key union. */
 type _StringPart<K> = Extract<K, string>;
+/** Non-string component (e.g., symbol) of a key union. */
 type _NonStringPart<K> = Exclude<K, string>;
+/**
+ * Normalize string keys:
+ * - keep broad `string` as-is for ergonomics;
+ * - remove `''` from literal unions for correctness.
+ */
 type _NormalizedString<S> = S extends string
   ? string extends S
     ? string
     : NonEmptyString<S>
   : never;
 
+/**
+ * Inner entity map type with normalized key constraints and defined values.
+ */
 export type ImmutableEntities<K extends string | symbol, V> = Readonly<
   Record<_NormalizedString<_StringPart<K>> | _NonStringPart<K>, NonNullable<V>>
 >;
