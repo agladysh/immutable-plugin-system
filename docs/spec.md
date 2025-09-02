@@ -1,7 +1,7 @@
 # Specification: Immutable Plugin System
 
 - **Specification Version:** 1.1.0
-- **Document Revision:** 1.1.4
+- **Document Revision:** 1.1.5
 - **Status:** FINAL
 
 This document specifies a minimalist strongly typed immutable plugin system for
@@ -96,6 +96,16 @@ Via negativa, we're:
 
 - Entity conflicts are handled by integrations. Host is agnostic to entity
   duplication between plugins.
+
+#### Entity Value Immutability
+
+- Library guarantees structural immutability of plugin and collection
+  containers; it never mutates or deep‑clones entity values.
+- Entity values are opaque to the library. Their shape and lifecycle are
+  integration‑defined. The library treats them as immutable by convention and
+  preserves provenance, but does not enforce immutability (no freezing).
+- If an integration needs enforcement, it SHOULD freeze values before passing
+  them to the host, or wrap host access in an integration‑specific layer.
 
 #### Entity Type Optionality
 
@@ -548,6 +558,13 @@ No external dependencies.
 - Cutting-edge `package.json` structure.
 
 ## Document Revision History
+
+### r1.1.5 / v1.1.0
+
+- Clarified the stance on entity value immutability: values are treated as
+  immutable by convention; the library ensures structural immutability of
+  containers and provenance preservation but does not freeze or clone entities.
+  Integrations own value immutability enforcement when required.
 
 ### r1.1.4 / v1.1.0
 
