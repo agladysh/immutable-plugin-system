@@ -14,7 +14,7 @@ Minimalist, strongly typed, immutable plugin system.
 
 Links:
 
-- Specification: [docs/spec.md](docs/spec.md) (status: FINAL, v1.1.0 / r1.1.6)
+- Specification: [docs/spec.md](docs/spec.md)
 - API Reference: [docs/api](docs/api/README.md)
 - Example: [examples/events](examples/events/)
 
@@ -22,10 +22,12 @@ Links:
 
 - Requirements: Node.js ≥22, pnpm ≥10.
 
-Install from npm:
+<!-- TODO: Replace with install from NPM when published -->
+
+Install from GitHub:
 
 ```bash
-pnpm add immutable-plugin-system
+pnpm add https://github.com/agladysh/immutable-plugin-system/
 ```
 
 ## Core Ideas
@@ -209,7 +211,8 @@ Conventions:
 
 ## Out of Scope
 
-- Plugin discovery.
+- Plugin discovery. Use e.g.
+  [`installed-node-modules`](https://www.npmjs.com/package/installed-node-modules).
 - Plugin ordering and dependency resolution.
 - Plugin/host configuration.
 
@@ -234,18 +237,14 @@ recommendations.
 
 ## Contributing
 
-- Requirements: Node.js ≥22, pnpm ≥10.
 - Install: `pnpm -s install`
-- Iterate: `pnpm -s test:fix` (eslint + prettier + markdownlint auto‑fix, then
-  build + tsd + tap)
-- Full checks: `pnpm -s test` (runs lint and all tests)
+- Iterate: `pnpm -s test:fix`
+- Full checks: `pnpm -s test`
 - Pre‑commit hook runs the equivalent of `pnpm -s lint`.
 - Coding standards:
   - TypeScript strict types; `any` is forbidden, `unknown` only with proper
     guards.
-  - TSDoc everywhere; enforced by ESLint (`tsdoc/syntax`).
-  - No runtime mutation of library‑owned containers; do not freeze/clone entity
-    values.
+  - TSDoc everywhere.
   - Use conventional commits for clarity and tooling compatibility.
 
 ## Stability
@@ -256,4 +255,4 @@ once released.
 
 ## License
 
-MIT — see LICENSE
+MIT — see [LICENSE](./LICENSE)
