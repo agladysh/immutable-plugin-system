@@ -1,16 +1,60 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["src/index.ts"],
-  "tsconfig": "tsconfig.json",
-  "name": "immutable-plugin-system",
+  "plugin": ["typedoc-plugin-inline-sources", "typedoc-plugin-coverage"],
+  "cleanOutputDir": true,
+  "tsconfig": "./tsconfig.build.json",
+  "entryPoints": ["./src/index.ts"],
+  "highlightLanguages": [
+    "bash",
+    "console",
+    "css",
+    "diff",
+    "html",
+    "javascript",
+    "json",
+    "jsonc",
+    "json5",
+    "tsx",
+    "typescript"
+  ],
+  "alwaysCreateEntryPointModule": true,
   "includeVersion": true,
   "excludePrivate": true,
-  "excludeProtected": true,
-  "excludeInternal": false,
-  "categorizeByGroup": true,
-  "readme": "docs/typedoc-root.md",
+  "excludeProtected": false,
+  "excludeInternal": true,
+  "jsDocCompatibility": false,
   "validation": {
-    "notDocumented": false,
-    "notExported": false
-  }
+    "notDocumented": true,
+    "notExported": true,
+    "invalidLink": true,
+    "rewrittenLink": true,
+    "unusedMergeModuleWith": true
+  },
+  "intentionallyNotExported": [
+    "_NormalizedString",
+    "_StringPart",
+    "_NonStringPart"
+  ],
+  "treatValidationWarningsAsErrors": true,
+  "treatWarningsAsErrors": true,
+  "readme": "none",
+  "outputs": [
+    {
+      "name": "html",
+      "path": "./site/",
+      "options": {
+        "readme": "README.md",
+        "projectDocuments": ["./docs/spec.md"],
+        "githubPages": true
+      }
+    },
+    {
+      "name": "markdown",
+      "path": "./docs/api/",
+      "options": {
+        "githubPages": false,
+        "hidePageHeader": true
+      }
+    }
+  ]
 }

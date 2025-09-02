@@ -36,9 +36,16 @@
       and similar AI-generated crud
 - [x] Run `vibe-check` and skeptically triage its output
 - [x] Rigorously review the code, examples, and tests
-- [ ] Generate documentation
-- [ ] Write [README.md](README.md)
-- [ ] Write [examples/README.md](examples/README.md)
+- [x] Generate JSDoc documentation. Pick modern generator that ideally would
+      give us Markdown in docs/ as well as a GitHub pages website later (see
+      below).
+- [ ] Switch to TSDoc, update comment syntax, replace all JSDoc mentions (except
+      in this file above) to JSDoc with TSDoc, configure strict
+      eslint-plugin-tsdoc, fix any violations.
+- [x] Add and configure typedoc-plugin-coverage.
+- [ ] Move ./tap.coverage-map.mjs to scripts/
+- [ ] Write rigorous [README.md](README.md)
+- [ ] Write rigorous [examples/README.md](examples/README.md)
 - [ ] Setup GH pages with hook on tag push
 - [ ] Setup GH npm publish hook on tag push
 - [ ] Setup GH release on tag push
