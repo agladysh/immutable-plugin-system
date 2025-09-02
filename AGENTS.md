@@ -37,13 +37,17 @@ Read the [specification](docs/spec.md) in full.
 
 ## Commands
 
-- `pnpm -s build` - Compiles TypeScript to `dist/`
-- `pnpm -s test` - Runs tap tests after linting
-- `pnpm -s test:fix` - Runs tap tests after attempting to fix lint errors
+- `pnpm -s build` - Builds the project, examples and documentation
+- `pnpm -s clean` - Cleans all artefacts
+- `pnpm -s clean:all` - Cleans all artefacts and deletes `node_modules`
+- `pnpm -s test` - Runs all tests after linting
+- `pnpm -s test:fix` - Runs all tests after attempting to fix lint errors
+- `pnpm -s test:ci` - Runs tests in CI-like environment, use to reproduce CI
+  issues
 - `pnpm -s lint` - Runs tsc, eslint, prettier, and markdownlint
 - `pnpm -s fix` - Auto-fixes eslint, prettier, and markdownlint issues
 - `pnpm -s tap -R terse` - Direct tap test runner using the concise `terse`
-  reporter (preferred for CI and quick iteration)
+  reporter
 - `pnpm -s tap report` - Display test coverage report for the last test run
 - `pnpm -s tsd` - Direct tsd test runner without linting
 - `pnpm -s tsd --files test-d/types.test-d.ts` - Runs tsd directly for a given
