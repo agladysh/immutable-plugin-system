@@ -65,6 +65,7 @@
     "coverage-map": "./scripts/tap.coverage-map.mjs"
   },
   "devDependencies": {
+    "@types/node": "^24.3.0",
     "@eslint/js": "^9.34.0",
     "eslint": "^9.34.0",
     "eslint-plugin-eslint-comments": "^3.2.0",
