@@ -23,7 +23,7 @@ Read the [specification](docs/spec.md) in full.
 - Use of `any` is strictly forbidden.
 - Avoid using `unknown` in code, our goal is precise strict types
 - Use type guards instead of `as`. Write both `assert*` and `is*` forms.
-- No code without rigorosly spec-compliant JSDocs.
+- No code without rigorosly spec-compliant TSDoc comments.
 - Never leave transient change history comments in code.
 - Code and tests should be idiomatically split to files.
 - Tests must have 100% coverage.

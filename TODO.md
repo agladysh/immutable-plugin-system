@@ -40,9 +40,9 @@
       give us Markdown in docs/ as well as a GitHub pages website later (see
       below).
 - [x] Add and configure typedoc-plugin-coverage.
-- [ ] Switch to TSDoc, update comment syntax, replace all JSDoc mentions (except
-      in this file above) to JSDoc with TSDoc, configure strict
-      eslint-plugin-tsdoc, fix any violations.
+- [x] Switch to TSDoc, update comment syntax, replace all JSDoc mentions (except
+      in this file above) to TSDoc, configure strict eslint-plugin-tsdoc, and
+      fix any violations.
 - [ ] Add documentation coverage badge `docs/api/coverage.svg` to README.md
 - [ ] Move ./tap.coverage-map.mjs to scripts/
 - [ ] Write rigorous [README.md](README.md)

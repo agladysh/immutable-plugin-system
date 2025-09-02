@@ -10,9 +10,9 @@ export type PluginURN = string;
 /**
  * Compile-time erasure of the empty string literal from a string type.
  *
- * Notes:
+ * @remarks
  * - For the broad `string`, the empty string remains allowed at the type level
- *   (ergonomics). Runtime guards still reject empty keys where applicable.
+ *   for ergonomics; runtime guards still reject empty keys where applicable.
  * - For literal unions, `''` is excluded precisely.
  */
 export type NonEmptyString<S extends string = string> = '' extends S
@@ -33,6 +33,7 @@ export type ImmutableEntityKey = symbol | NonEmptyString;
 /**
  * Type-safe record of entities mapped by keys with normalized string constraints.
  *
+ * @remarks
  * Goals (ergonomics + safety):
  * - Broad `string` keys remain `Record<string, V>` for usability (do not collapse to `never`).
  * - Literal string unions exclude the empty string at the type level via `NonEmptyString`.
@@ -44,8 +45,8 @@ export type ImmutableEntityKey = symbol | NonEmptyString;
  * `NonEmptyString<…>` to erase `''` from literal unions. Intersect the two
  * records to reconstruct the full map type.
  *
- * @template K - The key type, must extend ImmutableEntityKey
- * @template V - The value type for entities
+ * @typeParam K - The key type, must extend ImmutableEntityKey
+ * @typeParam V - The value type for entities
  */
 /** @internal String component of a key union. */
 type _StringPart<K> = Extract<K, string>;
@@ -74,7 +75,7 @@ export type ImmutableEntities<K extends string | symbol, V> = Readonly<
  * Entities record grouped by entity type (top-level key) to inner entity maps.
  * Conforms to the specification alias name.
  *
- * @template V - The value type stored in entity maps
+ * @typeParam V - The value type stored in entity maps
  */
 export type ImmutableEntitiesRecord<
   K extends string | symbol = string | symbol,
@@ -85,7 +86,7 @@ export type ImmutableEntitiesRecord<
  * Interface representing an immutable plugin in the plugin system.
  * Plugins expose typed read-only entities to the host and other plugins.
  *
- * @template C - The entities configuration type, where each entity type must be a record
+ * @typeParam C - The entities configuration type, where each entity type must be a record
  */
 export interface ImmutablePlugin<
   C extends ImmutableEntitiesRecord = ImmutableEntitiesRecord,
@@ -106,7 +107,7 @@ export interface ImmutablePlugin<
  * Type representing a record of plugins mapped by their URNs.
  * This type is used to define collections of plugins for the host.
  *
- * @template P - The plugin type, must extend ImmutablePlugin
+ * @typeParam P - The plugin type, must extend ImmutablePlugin
  */
 export type ImmutablePlugins<P extends ImmutablePlugin = ImmutablePlugin> =
   Readonly<Record<PluginURN, P>>;

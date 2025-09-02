@@ -2,6 +2,7 @@ import js from '@eslint/js';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import eslintComments from 'eslint-plugin-eslint-comments';
+import tsdoc from 'eslint-plugin-tsdoc';
 
 export default tseslint.config(
   {
@@ -23,6 +24,7 @@ export default tseslint.config(
     },
     plugins: {
       'eslint-comments': eslintComments,
+      tsdoc,
     },
     linterOptions: {
       reportUnusedDisableDirectives: true,
@@ -50,6 +52,8 @@ export default tseslint.config(
         'error',
         '@typescript-eslint/no-explicit-any',
       ],
+      // Enforce strict TSDoc syntax across the codebase
+      'tsdoc/syntax': 'error',
     },
   },
   {

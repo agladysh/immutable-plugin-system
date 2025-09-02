@@ -12,7 +12,7 @@ export type EventURN = string;
 /**
  * Example event envelope.
  *
- * @template T - Event name (URN) literal that identifies the event kind
+ * @typeParam T - Event name (URN) literal that identifies the event kind
  */
 export interface Event<T extends EventURN> {
   /** Event name (URN) that discriminates the event union. */
@@ -34,8 +34,8 @@ export type EventListener<E extends Event<EventURN>> = _Bivariant<
 /**
  * Mapping of event name literals to their event payload types.
  *
- * @template EventUnion - Union of supported events
- * @template K - Event names; defaults to the union of `EventUnion['name']`
+ * @typeParam EventUnion - Union of supported events
+ * @typeParam K - Event names; defaults to the union of `EventUnion['name']`
  */
 export type Events<
   EventUnion extends Event<EventURN>,

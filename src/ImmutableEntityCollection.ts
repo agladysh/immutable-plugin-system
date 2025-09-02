@@ -3,7 +3,7 @@ import type { ImmutableEntities, PluginURN } from './types.js';
 /**
  * Internal storage item that tracks an entity with its source plugin.
  *
- * @template E - The entity type
+ * @typeParam E - The entity type
  */
 interface EntityWithPlugin<E> {
   /**
@@ -19,11 +19,11 @@ interface EntityWithPlugin<E> {
 
 /**
  * Implementation of immutable entity collections that provide convenient iteration methods.
- * Wraps Map<K, E[]> functionality with additional utility methods for working with entities.
+ * Wraps Map\<K, E[]\> functionality with additional utility methods for working with entities.
  * Tracks which plugin each entity came from for proper attribution.
  *
- * @template K - The key type, must extend PropertyKey
- * @template E - The entity type
+ * @typeParam K - The key type, must extend PropertyKey
+ * @typeParam E - The entity type
  */
 export class ImmutableEntityCollection<K extends string | symbol, E> {
   /**
@@ -98,7 +98,7 @@ export class ImmutableEntityCollection<K extends string | symbol, E> {
   /**
    * Maps over entity arrays by key, applying the transform function to each group.
    *
-   * @template U - The return type of the mapping function
+   * @typeParam U - The return type of the mapping function
    * @param fn - Function that transforms an entity array and key into type U
    * @returns Array of transformed values
    */
@@ -114,7 +114,7 @@ export class ImmutableEntityCollection<K extends string | symbol, E> {
   /**
    * Flat maps over individual entities, applying the transform function to each entity.
    *
-   * @template U - The return type of the mapping function
+   * @typeParam U - The return type of the mapping function
    * @param fn - Function that transforms an entity, key, and plugin URN into type U
    * @returns Array of transformed values
    */

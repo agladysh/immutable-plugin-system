@@ -24,8 +24,8 @@ function ownKeys<T extends object>(
  * Maps entity keys to their corresponding ImmutableEntityCollection types.
  * This implementation correctly handles the constraint that all entity types are records.
  *
- * @template K - The entity key type, must extend PropertyKey
- * @template T - The entity types record, where each value must be a record
+ * @typeParam K - The entity key type, must extend PropertyKey
+ * @typeParam T - The entity types record, where each value must be a record
  */
 export type ImmutableEntityCollections<
   K extends PropertyKey,
@@ -41,11 +41,11 @@ export type ImmutableEntityCollections<
  * Type that extracts entity collections from a plugin's entities.
  * Creates the appropriate entity collections based on the plugin's entity configuration.
  *
- * @template P - The plugin type, must extend ImmutablePlugin
+ * @typeParam P - The plugin type, must extend ImmutablePlugin
  */
 /**
- * Helper alias used to derive the entity collections mapping from a
- * plugin's entities definition.
+ * Helper alias used to derive the entity collections mapping from a plugin's
+ * entities definition.
  */
 export type ImmutableEntityCollectionsFromPlugin<
   P extends ImmutablePlugin<ImmutableEntitiesRecord>,
@@ -56,7 +56,7 @@ export type ImmutableEntityCollectionsFromPlugin<
  * The host maintains the full set of entities available by plugin and provides
  * type-safe access to all entity collections.
  *
- * @template P - The plugin type, must extend ImmutablePlugin
+ * @typeParam P - The plugin type, must extend ImmutablePlugin
  */
 export class ImmutableHost<P extends ImmutablePlugin<ImmutableEntitiesRecord>> {
   /**
