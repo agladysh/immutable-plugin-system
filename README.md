@@ -16,7 +16,7 @@ Links:
 
 - Specification: [docs/spec.md](docs/spec.md) (status: FINAL, v1.1.0 / r1.1.6)
 - API Reference: [docs/api](docs/api/README.md)
-- Example: [examples/events](examples/events/README.md)
+- Example: [examples/events](examples/events/)
 
 ## Install
 
