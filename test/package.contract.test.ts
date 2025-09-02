@@ -272,7 +272,8 @@ t.test(
       p: { a: '1', b: '2' },
     });
     const mapped = col.map(
-      (entities, key) => `${String(key)}=${entities.join(',')}`
+      (entities: string[], key: string) =>
+        `${String(key)}=${entities.join(',')}`
     );
     t.same(mapped.sort(), ['a=1', 'b=2'].sort(), 'map collects per-key arrays');
     t.end();

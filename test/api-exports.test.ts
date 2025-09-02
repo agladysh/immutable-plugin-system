@@ -13,6 +13,7 @@ import {
   type ImmutablePlugin,
   type ImmutablePlugins,
 } from 'immutable-plugin-system';
+import type { PluginURN } from 'immutable-plugin-system';
 
 t.test('guards: success and failure cases', (t) => {
   t.equal(isPlainObject({}), true, 'isPlainObject accepts object');
@@ -114,7 +115,7 @@ t.test('host and collection via package exports', (t) => {
   const entries = Array.from(host.entities.assets.entries());
   t.equal(entries.length, 1, 'entries yields one key');
   const flatMapRes = host.entities.assets.flatMap(
-    (v, k, p) => `${p}:${k}:${v}`
+    (v: string, k: string, p: PluginURN) => `${p}:${k}:${v}`
   );
   t.same(
     flatMapRes.sort(),
