@@ -39,8 +39,13 @@ function forEachEntry<K extends string, V>(
   }
 }
 
-// In real life, prefer explicit schema and stricter guards; this is a
-// pragmatic heuristic sufficient for the example.
+/**
+ * Heuristic check for an `ImmutableEntityCollection` of event listeners.
+ *
+ * Notes (example scope): This is intentionally lightweight runtime probing
+ * used only for the example module. Real integrations should validate against
+ * an explicit schema.
+ */
 function isListenerCollection<EventUnion extends Event<EventURN>>(
   value: unknown
 ): value is ImmutableEntityCollection<
@@ -60,8 +65,13 @@ function isListenerCollection<EventUnion extends Event<EventURN>>(
   return typeof first?.[0] === 'function';
 }
 
-// In real life, prefer explicit schema and stricter guards; this is a
-// simplified shape check sufficient for the example.
+/**
+ * Minimal shape check for an entities record mapping event names to listeners.
+ *
+ * Notes (example scope): This validates that all enumerable values are
+ * functions; it is sufficient for the example. Prefer explicit schema in real
+ * integrations.
+ */
 function isEventEntitiesRecord<EventUnion extends Event<EventURN>>(
   value: unknown
 ): value is EventEntities<EventUnion> {
