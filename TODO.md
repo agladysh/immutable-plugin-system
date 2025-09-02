@@ -35,7 +35,7 @@
 - [x] Identify and clean up any transient change history comments in the code,
       and similar AI-generated crud
 - [ ] Run `vibe-check` and skeptically triage its output
-- [ ] Rigorously review the code, examples, and tests
+- [x] Rigorously review the code, examples, and tests
 - [ ] Generate documentation
 - [ ] Write [README.md](README.md)
 - [ ] Write [examples/README.md](examples/README.md)
