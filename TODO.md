@@ -27,10 +27,13 @@
 - [x] Amend spec (v1.1.1/r1.1.3) to forbid empty string as plugin name. Refine
       implementation, tsd and tap tests to support.
 - [x] Add GH CI hook
+- [ ] Figure out and document position on individual asset immutability: (a) out
+      of scope, (b) by convention (integrations must guarantee, we do not
+      check), (c) we enforce, (d) other
 - [ ] Implement code, example and tests, all with rigorous inline documentation
 - [ ] Run `~/.cargo/bin/similarity-ts` and fix reports
-- [ ] Clean up any transient change history comments in the code, and similar
-      AI-generated crud
+- [ ] Identify and clean up any transient change history comments in the code,
+      and similar AI-generated crud
 - [ ] Rigorously review the code, examples, and tests
 - [ ] Generate documentation
 - [ ] Write [README.md](README.md)
