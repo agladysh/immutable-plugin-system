@@ -24,6 +24,9 @@ jobs:
       - name: Lint (tsc, eslint, prettier, markdownlint)
         run: pnpm -s lint
 
+      - name: Build library
+        run: pnpm -s build
+
       - name: Build example(s)
         run: pnpm -s run build:examples
 
