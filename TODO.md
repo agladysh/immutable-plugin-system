@@ -50,7 +50,7 @@
 - [x] Add test coverage badge to [README.md](README.md)
 - [x] Add CI badge to [README.md](README.md)
 - [x] Add TypeScript badge to [README.md](README.md)
-- [ ] Write rigorous [examples/README.md](examples/README.md)
+- [x] Write rigorous [examples/README.md](examples/README.md)
 - [ ] Setup GH pages with hook on tag push
 - [ ] Setup GH npm publish hook on tag push
 - [ ] Setup GH release on tag push
