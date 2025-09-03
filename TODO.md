@@ -55,6 +55,7 @@
 - [ ] Setup GH npm publish hook on tag push
 - [ ] Setup GH release on tag push
 - [ ] Consider to lower Node version in package.json, if code allows
+- [ ] Design approach and unhardcode node and pnpm versions from GH hooks
 - [ ] Switch GH pages hook to tag push only
 - [ ] Prepare `package.json` for publication, enable using other package
       managers on installation
