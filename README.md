@@ -1,7 +1,7 @@
 # Immutable Plugin System (TypeScript, Node.js ≥22)
 
 [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
-![Documentation coverage](docs/api/coverage.svg)
+![Documentation coverage](https://raw.githubusercontent.com/agladysh/immutable-plugin-system/main/docs/api/coverage.svg)
 ![Test coverage](https://img.shields.io/badge/coverage-100%25-green.svg)
 ![CI](https://github.com/agladysh/immutable-plugin-system/actions/workflows/ci.yml/badge.svg)
 
@@ -15,8 +15,10 @@ Minimalist, strongly typed, immutable plugin system.
 Links:
 
 - Specification: [docs/spec.md](docs/spec.md)
-- API Reference: [docs/api](docs/api/README.md)
-- Example: [examples/events](examples/events/)
+- API Reference:
+  [docs/api](https://github.com/agladysh/immutable-plugin-system/tree/main/docs/api)
+- Example:
+  [examples/events](https://github.com/agladysh/immutable-plugin-system/tree/main/examples/events)
 
 ## Install
 
@@ -242,4 +244,5 @@ once released.
 
 ## License
 
-MIT — see [LICENSE](./LICENSE)
+MIT — see
+[LICENSE](https://github.com/agladysh/immutable-plugin-system/blob/main/LICENSE)

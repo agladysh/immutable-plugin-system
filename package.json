@@ -34,7 +34,9 @@
   "packageManager": "pnpm@10.15.1",
   "scripts": {
     "build:tsc": "tsc -p tsconfig.build.json",
-    "build:docs": "typedoc",
+    "build:docs:site": "typedoc --options typedoc.site.json",
+    "build:docs:md": "typedoc --options typedoc.md.json",
+    "build:docs": "pnpm -s run build:docs:site && pnpm -s run build:docs:md",
     "build:examples": "tsc -p examples/events/tsconfig.json",
     "build": "pnpm -s run build:tsc && pnpm -s run build:examples && pnpm -s run build:docs",
     "clean:dist": "rm -rf dist examples/**/dist",

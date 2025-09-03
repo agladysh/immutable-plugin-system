@@ -52,9 +52,10 @@
 - [x] Add TypeScript badge to [README.md](README.md)
 - [x] Write rigorous [examples/README.md](examples/README.md)
 - [x] Setup GH pages with hook on master push
-- [ ] Plugin options in typedoc are not picked up (site is missing readme and
+- [x] Plugin options in typedoc are not picked up (site is missing readme and
       spec, which are omitted in markdown version to avoid file duplication),
       fix or split configuration.
+- [ ] GH pages should idiomatically point to the repo somewhere in the header
 - [ ] Build only HTML in GH pages hook.
 - [ ] Setup GH npm publish hook on tag push
 - [ ] Setup GH release on tag push

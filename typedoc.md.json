@@ -38,24 +38,6 @@
   "treatWarningsAsErrors": true,
   "readme": "none",
   "gitRevision": "main",
-  "outputs": [
-    {
-      "name": "html",
-      "path": "./site/",
-      "options": {
-        "readme": "README.md",
-        "projectDocuments": ["./docs/spec.md"],
-        "githubPages": true
-      }
-    },
-    {
-      "name": "markdown",
-      "path": "./docs/api/",
-      "options": {
-        "githubPages": false,
-        "hidePageHeader": true,
-        "router": "member"
-      }
-    }
-  ]
+  "out": "./docs/api/",
+  "hidePageHeader": true
 }

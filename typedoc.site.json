@@ -1,0 +1,45 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "plugin": ["typedoc-plugin-coverage"],
+  "cleanOutputDir": true,
+  "tsconfig": "./tsconfig.build.json",
+  "entryPoints": ["./src/index.ts"],
+  "highlightLanguages": [
+    "bash",
+    "console",
+    "css",
+    "diff",
+    "html",
+    "javascript",
+    "json",
+    "jsonc",
+    "json5",
+    "tsx",
+    "typescript"
+  ],
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "excludeInternal": true,
+  "jsDocCompatibility": false,
+  "validation": {
+    "notDocumented": true,
+    "notExported": true,
+    "invalidLink": true,
+    "rewrittenLink": true,
+    "unusedMergeModuleWith": true
+  },
+  "intentionallyNotExported": [
+    "_NormalizedString",
+    "_StringPart",
+    "_NonStringPart"
+  ],
+  "treatValidationWarningsAsErrors": true,
+  "treatWarningsAsErrors": true,
+  "hostedBaseUrl": "https://agladysh.github.io/immutable-plugin-system/",
+  "gitRevision": "main",
+  "readme": "README.md",
+  "projectDocuments": ["./docs/spec.md"],
+  "githubPages": true,
+  "out": "./site/"
+}
