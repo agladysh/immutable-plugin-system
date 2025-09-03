@@ -51,10 +51,11 @@
 - [x] Add CI badge to [README.md](README.md)
 - [x] Add TypeScript badge to [README.md](README.md)
 - [x] Write rigorous [examples/README.md](examples/README.md)
-- [ ] Setup GH pages with hook on tag push
+- [x] Setup GH pages with hook on master push
 - [ ] Setup GH npm publish hook on tag push
 - [ ] Setup GH release on tag push
 - [ ] Consider to lower Node version in package.json, if code allows
+- [ ] Switch GH pages hook to tag push only
 - [ ] Prepare `package.json` for publication, enable using other package
       managers on installation
 - [ ] Prepare release 1.0.0-rc1 with proper [CHANGELOG.md](CHANGELOG.md)

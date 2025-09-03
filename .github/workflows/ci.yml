@@ -15,8 +15,34 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Enable Corepack (repo-pinned pnpm)
-        run: corepack enable
+      - name: Resolve Node version from .npmrc
+        id: nodever
+        run: |
+          set -euo pipefail
+          ver=$(grep -E '^(use-node-version|node-version)=' .npmrc | head -n1 | cut -d'=' -f2 | tr -d '[:space:]')
+          if [ -z "$ver" ]; then echo "No node version in .npmrc" >&2; exit 1; fi
+          echo "version=$ver" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ steps.nodever.outputs.version }}
+          cache: 'pnpm'
+
+      - name: Resolve pnpm version from package.json
+        id: pnpm
+        run: |
+          set -euo pipefail
+          line=$(grep -oE '"packageManager"\s*:\s*"pnpm@[^\"]+"' package.json || true)
+          if [ -z "$line" ]; then echo "packageManager with pnpm not found" >&2; exit 1; fi
+          ver=$(printf '%s\n' "$line" | sed -E 's/.*pnpm@([^\"]+)"/\1/')
+          echo "version=$ver" >> "$GITHUB_OUTPUT"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ steps.pnpm.outputs.version }}
+          run_install: false
 
       - name: Install dependencies
         run: pnpm -s install
