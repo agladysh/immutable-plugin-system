@@ -1,9 +1,9 @@
-import { ImmutableHost } from '../../../dist/index.js';
+import { ImmutableHost } from 'immutable-plugin-system';
 import type {
   ImmutablePlugin,
   ImmutablePlugins,
   ImmutableEntities,
-} from '../../../dist/index.js';
+} from 'immutable-plugin-system';
 import type { Emitter, EventEntities } from './events.js';
 import { emitterFromEntities } from './events.js';
 

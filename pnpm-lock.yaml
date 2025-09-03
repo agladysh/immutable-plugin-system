@@ -60,6 +60,19 @@ importers:
         specifier: ^8.40.0
         version: 8.41.0(eslint@9.34.0)(typescript@5.9.2)
 
+  examples/events:
+    dependencies:
+      immutable-plugin-system:
+        specifier: workspace:*
+        version: link:../..
+    devDependencies:
+      '@types/node':
+        specifier: ^24.3.0
+        version: 24.3.0
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.2
+
 packages:
 
   '@alcalzone/ansi-tokenize@0.1.3':

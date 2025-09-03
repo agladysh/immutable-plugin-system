@@ -7,8 +7,17 @@
   "engines": {
     "node": ">=22"
   },
+  "packageManager": "pnpm@10.13.1",
+  "dependencies": {
+    "immutable-plugin-system": "workspace:*"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "start": "node dist/main.js"
+    "start": "node dist/main.js",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "typescript": "^5.9.2"
   }
 }

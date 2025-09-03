@@ -1,7 +1,7 @@
 import {
   ImmutableEntityCollection,
   type ImmutableEntities,
-} from '../../../dist/index.js';
+} from 'immutable-plugin-system';
 
 /**
  * Unique identifier for an event in the example event system.

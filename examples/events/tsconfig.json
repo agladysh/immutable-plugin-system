@@ -9,7 +9,11 @@
     "declaration": false,
     "emitDeclarationOnly": false,
     "composite": false,
-    "incremental": false
+    "incremental": false,
+    "baseUrl": ".",
+    "paths": {
+      "immutable-plugin-system": ["../../dist/index.d.ts"]
+    }
   },
   "include": ["src"]
 }
