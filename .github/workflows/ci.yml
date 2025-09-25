@@ -20,10 +20,10 @@ jobs:
         with:
           node-version: '22.19.0'
 
-      - name: Setup pnpm 10.15.1
+      - name: Setup pnpm 10.17.1
         uses: pnpm/action-setup@v4
         with:
-          version: 10.15.1
+          version: 10.17.1
           run_install: false
 
       - name: Install dependencies

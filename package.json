@@ -1,8 +1,9 @@
 {
   "name": "immutable-plugin-system",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A minimalist strongly typed immutable plugin system for Node.js",
   "type": "module",
+  "sideEffects": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -12,7 +13,10 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE",
+    "docs"
   ],
   "engines": {
     "node": ">=22"
@@ -33,7 +37,18 @@
   ],
   "author": "Alexander Gladysh <agladysh@gmail.com>",
   "license": "MIT",
-  "packageManager": "pnpm@10.15.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agladysh/immutable-plugin-system.git"
+  },
+  "bugs": {
+    "url": "https://github.com/agladysh/immutable-plugin-system/issues"
+  },
+  "homepage": "https://github.com/agladysh/immutable-plugin-system#readme",
+  "funding": {
+    "url": "https://github.com/sponsors/agladysh"
+  },
+  "packageManager": "pnpm@10.17.1",
   "scripts": {
     "build:tsc": "tsc -p tsconfig.build.json",
     "build:docs:site": "typedoc --options typedoc.site.json",
@@ -63,7 +78,8 @@
     "fix:markdownlint": "markdownlint --fix '**/*.md'",
     "fix": "pnpm -s run fix:eslint && pnpm -s run fix:prettier && pnpm -s run fix:markdownlint",
     "lefthook:precommit": "lefthook run pre-commit",
-    "link": "pnpm uninstall -g immutable-plugin-system || true && pnpm link --global \"$(pwd)\""
+    "link": "pnpm uninstall -g immutable-plugin-system || true && pnpm link --global \"$(pwd)\"",
+    "prepublishOnly": "pnpm -s clean && pnpm -s build"
   },
   "tap": {
     "coverage-map": "./scripts/tap.coverage-map.mjs"

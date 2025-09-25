@@ -1,4 +1,4 @@
-# immutable-plugin-system v0.1.0
+# immutable-plugin-system v0.1.1
 
 ## Classes
 
