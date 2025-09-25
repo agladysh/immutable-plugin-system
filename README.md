@@ -24,13 +24,11 @@ Links:
 
 - Requirements: Node.js ≥22, pnpm ≥10.
 
-<!-- TODO: Replace with install from NPM when published -->
-
-Install from GitHub:
-
 ```bash
-pnpm add https://github.com/agladysh/immutable-plugin-system/
+pnpm add immutable-plugin-system
 ```
+
+<!-- Or install from GitHub: pnpm add https://github.com/agladysh/immutable-plugin-system/ -->
 
 ## Core Ideas
 
