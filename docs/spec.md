@@ -1,7 +1,7 @@
 # Specification: Immutable Plugin System
 
-- **Specification Version:** 1.1.0
-- **Document Revision:** 1.1.6
+- **Specification Version:** 1.2.0
+- **Document Revision:** 1.2.0
 - **Status:** FINAL
 
 This document specifies a minimalist strongly typed immutable plugin system for
@@ -226,6 +226,9 @@ export interface ImmutablePlugin<
 ```ts
 export interface ImmutableEntityCollection<K extends string | symbol, E> {
   get(key: K): E[];
+  readonly size: number;
+  keys(): IterableIterator<K>;
+  values(): IterableIterator<E[]>;
   entries(): Iterator<[K, E[]]>;
   flat(): [E, K, PluginURN][];
   map<U>(fn: (entities: E[], key: K) => U): U[];
@@ -558,6 +561,14 @@ No external dependencies.
 - Cutting-edge `package.json` structure.
 
 ## Document Revision History
+
+### r1.2.0 / v1.2.0
+
+- Added Map-like methods to `ImmutableEntityCollection`:
+  - `readonly size: number` property returning the count of unique keys
+  - `keys(): IterableIterator<K>` method returning an iterator over unique keys
+  - `values(): IterableIterator<E[]>` method returning an iterator over entity
+    arrays per key
 
 ### r1.1.6 / v1.1.0
 
