@@ -3,11 +3,14 @@ name: CI
 on:
   push:
     branches: [main]
+    tags: ['v*']
   pull_request:
     branches: [main]
 
 jobs:
-  build-and-test:
+  # Fast feedback for development (pushes/PRs)
+  test-push:
+    if: github.event_name != 'push' || !startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     env:
       CI: true
@@ -43,3 +46,108 @@ jobs:
 
       - name: Run tsd type tests
         run: pnpm -s test:tsd
+
+  # Comprehensive compatibility testing for releases
+  test-release:
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+    strategy:
+      matrix:
+        node: ['18', '20', '22']
+        package-manager: ['pnpm', 'npm', 'yarn']
+        include:
+          - package-manager: pnpm
+            pm-version: '8'
+          - package-manager: pnpm
+            pm-version: '9'
+          - package-manager: pnpm
+            pm-version: '10'
+          - package-manager: npm
+            pm-version: 'bundled'
+          - package-manager: yarn
+            pm-version: '1'
+          - package-manager: yarn
+            pm-version: '3'
+          - package-manager: yarn
+            pm-version: '4'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Setup pnpm ${{ matrix.pm-version }}
+        if: matrix.package-manager == 'pnpm'
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ matrix.pm-version }}
+          run_install: false
+
+      - name: Setup yarn ${{ matrix.pm-version }}
+        if: matrix.package-manager == 'yarn' && matrix.pm-version != 'bundled'
+        run: npm install -g yarn@${{ matrix.pm-version }}
+
+      - name: Install dependencies
+        run: |
+          if [ "${{ matrix.package-manager }}" = "pnpm" ]; then
+            pnpm -s install
+          elif [ "${{ matrix.package-manager }}" = "yarn" ]; then
+            yarn install --frozen-lockfile
+          else
+            npm ci
+          fi
+
+      - name: Lint
+        run: |
+          if [ "${{ matrix.package-manager }}" = "pnpm" ]; then
+            pnpm -s lint
+          elif [ "${{ matrix.package-manager }}" = "yarn" ]; then
+            yarn lint
+          else
+            npm run lint
+          fi
+
+      - name: Build library
+        run: |
+          if [ "${{ matrix.package-manager }}" = "pnpm" ]; then
+            pnpm -s build:tsc
+          elif [ "${{ matrix.package-manager }}" = "yarn" ]; then
+            yarn build:tsc
+          else
+            npm run build:tsc
+          fi
+
+      - name: Build examples
+        run: |
+          if [ "${{ matrix.package-manager }}" = "pnpm" ]; then
+            pnpm -s build:examples
+          elif [ "${{ matrix.package-manager }}" = "yarn" ]; then
+            yarn build:examples
+          else
+            npm run build:examples
+          fi
+
+      - name: Run tap tests
+        run: |
+          if [ "${{ matrix.package-manager }}" = "pnpm" ]; then
+            pnpm -s tap -R terse
+          elif [ "${{ matrix.package-manager }}" = "yarn" ]; then
+            yarn test:tap
+          else
+            npm run test:tap
+          fi
+
+      - name: Run tsd tests
+        run: |
+          if [ "${{ matrix.package-manager }}" = "pnpm" ]; then
+            pnpm -s test:tsd
+          elif [ "${{ matrix.package-manager }}" = "yarn" ]; then
+            yarn test:tsd
+          else
+            npm run test:tsd
+          fi

@@ -19,7 +19,7 @@
     "docs"
   ],
   "engines": {
-    "node": ">=22"
+    "node": ">=18"
   },
   "keywords": [
     "plugin",
@@ -48,22 +48,31 @@
   "funding": {
     "url": "https://github.com/sponsors/agladysh"
   },
-  "packageManager": "pnpm@10.17.1",
   "scripts": {
+    "lint": "npm run lint:tsc && npm run lint:eslint && npm run lint:prettier && npm run lint:markdownlint",
+    "lint:tsc": "tsc --noEmit",
+    "lint:eslint": "eslint",
+    "lint:prettier": "prettier --check .",
+    "lint:markdownlint": "markdownlint '**/*.md'",
     "build:tsc": "tsc -p tsconfig.build.json",
     "build:docs:site": "typedoc --options typedoc.site.json",
     "build:docs:md": "typedoc --options typedoc.md.json",
-    "build:docs": "pnpm -s run build:docs:site && pnpm -s run build:docs:md",
+    "build:docs": "npm run build:docs:site && npm run build:docs:md",
     "build:examples": "tsc -p examples/events/tsconfig.json",
-    "build": "pnpm -s run build:tsc && pnpm -s run build:examples && pnpm -s run build:docs",
+    "build": "npm run build:tsc && npm run build:examples && npm run build:docs",
     "clean:dist": "rm -rf dist examples/**/dist",
     "clean:ts": "rm -f tsconfig.*.tsbuildinfo",
     "clean:reports": "rm -rf .tap .nyc_output coverage",
     "clean:docs": "rm -rf docs/api site",
     "clean": "pnpm -s run clean:dist && pnpm -s run clean:ts && pnpm -s run clean:reports && pnpm -s run clean:docs",
     "clean:all": "rm -rf node_modules examples/**/node_modules && pnpm -s run clean",
-    "test:tsd": "pnpm -s build && tsd",
-    "test:tap": "pnpm -s run build:examples && tap",
+    "test:tsd": "npm run build:tsc && tsd",
+    "test:tap": "npm run build:examples && tap -R terse",
+    "test:tap:direct": "tap -R terse",
+    "test:tsd:direct": "tsd",
+    "lint:direct": "eslint",
+    "build:tsc:direct": "tsc -p tsconfig.build.json",
+    "build:examples:direct": "tsc -p examples/events/tsconfig.json",
     "test:all": "pnpm -s run test:tsd && pnpm -s run test:tap",
     "test": "pnpm -s run lint && pnpm -s run test:all",
     "test:ci": "bash -lc 'set -euo pipefail; export CI=true; pnpm -s run clean:all && pnpm -s install && pnpm -s test'",
@@ -72,7 +81,6 @@
     "lint:prettier": "prettier --check .",
     "lint:tsc": "tsc --noEmit",
     "lint:markdownlint": "markdownlint '**/*.md'",
-    "lint": "pnpm -s run lint:tsc && pnpm -s run lint:eslint && pnpm -s run lint:prettier && pnpm -s run lint:markdownlint",
     "fix:eslint": "eslint --fix",
     "fix:prettier": "prettier --write .",
     "fix:markdownlint": "markdownlint --fix '**/*.md'",
