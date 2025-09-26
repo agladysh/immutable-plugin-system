@@ -174,3 +174,33 @@ expectType<{ value: number }>(
 expectType<string[]>(
   complexPlugins['complex-plugin'].entities.type2[Symbol('someSymbol')]
 );
+
+// ImmutableEntityCollection tests
+import type { ImmutableEntityCollection } from '..';
+
+declare const stringCollection: ImmutableEntityCollection<string, string>;
+declare const symbolCollection: ImmutableEntityCollection<symbol, number>;
+
+// size property
+expectType<number>(stringCollection.size);
+expectType<number>(symbolCollection.size);
+
+// keys method
+expectType<IterableIterator<string>>(stringCollection.keys());
+expectType<IterableIterator<symbol>>(symbolCollection.keys());
+
+// values method
+expectType<IterableIterator<string[]>>(stringCollection.values());
+expectType<IterableIterator<number[]>>(symbolCollection.values());
+
+// Integration with for-of loops
+for (const key of stringCollection.keys()) {
+  expectType<string>(key);
+}
+for (const values of stringCollection.values()) {
+  expectType<string[]>(values);
+}
+for (const [key, values] of stringCollection.entries()) {
+  expectType<string>(key);
+  expectType<string[]>(values);
+}

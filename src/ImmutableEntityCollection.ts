@@ -65,6 +65,39 @@ export class ImmutableEntityCollection<K extends string | symbol, E> {
   }
 
   /**
+   * Returns the number of unique keys in the collection.
+   *
+   * @returns The count of unique keys
+   */
+  get size(): number {
+    return this.storage.size;
+  }
+
+  /**
+   * Returns an iterator over the unique keys in the collection.
+   *
+   * @returns Iterator yielding unique keys in insertion order
+   */
+  keys(): IterableIterator<K> {
+    return this.storage.keys();
+  }
+
+  /**
+   * Returns an iterator over the entity arrays for each key in the collection.
+   *
+   * @returns Iterator yielding entity arrays in insertion order
+   */
+  values(): IterableIterator<E[]> {
+    const storage = this.storage;
+    function* gen(): IterableIterator<E[]> {
+      for (const [, list] of storage.entries()) {
+        yield list.map((item) => item.entity);
+      }
+    }
+    return gen();
+  }
+
+  /**
    * Returns an iterator over all key-entity array pairs.
    *
    * @returns Iterator yielding [key, entities[]] tuples

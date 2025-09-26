@@ -118,6 +118,9 @@ const results = host.entities.commands.get('hello').map((fn) => fn('arg'));
 
 - `get(key: K): E[]` — returns all entities for a key. Returns a fresh array
   copy; mutating it does not affect the collection.
+- `size: number` — returns the number of unique keys in the collection.
+- `keys(): Iterator<K>` — returns an iterator over unique keys.
+- `values(): Iterator<E[]>` — returns an iterator over entity arrays per key.
 - `entries(): Iterator<[K, E[]]>` — per‑key grouped arrays.
 - `flat(): [E, K, PluginURN][]` — flattened entities with provenance.
 - `map(fn)` / `flatMap(fn)` — transform grouped or individual items.

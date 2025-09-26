@@ -546,3 +546,161 @@ test('empty plugin entities', (t) => {
   t.equal(entries.length, 1, 'empty plugin does not create entries');
   t.end();
 });
+
+test('size property', (t) => {
+  const emptyCollection = new ImmutableEntityCollection<string, string>({});
+  t.equal(emptyCollection.size, 0, 'empty collection has size 0');
+
+  const pluginEntities: ImmutableEntitiesRecord<string, string> = {
+    'plugin-a': {
+      key1: 'value1',
+      key2: 'value2',
+    },
+    'plugin-b': {
+      key1: 'value1-b',
+      key3: 'value3',
+    },
+  };
+  const collection = new ImmutableEntityCollection(pluginEntities);
+
+  t.equal(collection.size, 3, 'collection with 3 unique keys has size 3');
+
+  // Test that size reflects unique keys, not total entities
+  const sharedKeyEntities: ImmutableEntitiesRecord<string, string> = {
+    'plugin-a': {
+      shared: 'a',
+    },
+    'plugin-b': {
+      shared: 'b',
+    },
+  };
+  const sharedCollection = new ImmutableEntityCollection(sharedKeyEntities);
+  t.equal(sharedCollection.size, 1, 'collection with shared key has size 1');
+
+  t.end();
+});
+
+test('keys method', (t) => {
+  const emptyCollection = new ImmutableEntityCollection<string, string>({});
+  const emptyKeys = Array.from(emptyCollection.keys());
+  t.equal(emptyKeys.length, 0, 'empty collection keys returns empty array');
+
+  const pluginEntities: ImmutableEntitiesRecord<string, string> = {
+    'plugin-a': {
+      key1: 'value1',
+      key2: 'value2',
+    },
+    'plugin-b': {
+      key1: 'value1-b',
+      key3: 'value3',
+    },
+  };
+  const collection = new ImmutableEntityCollection(pluginEntities);
+
+  const keys = Array.from(collection.keys());
+  t.equal(keys.length, 3, 'keys returns correct number of unique keys');
+  t.ok(keys.includes('key1'), 'keys includes key1');
+  t.ok(keys.includes('key2'), 'keys includes key2');
+  t.ok(keys.includes('key3'), 'keys includes key3');
+
+  // Test with symbol keys
+  const symKey1 = Symbol('key1');
+  const symKey2 = Symbol('key2');
+  const symbolEntities: ImmutableEntitiesRecord<symbol, string> = {
+    'plugin-a': {
+      [symKey1]: 'value1',
+    },
+    'plugin-b': {
+      [symKey2]: 'value2',
+    },
+  };
+  const symbolCollection = new ImmutableEntityCollection(symbolEntities);
+  const symbolKeys = Array.from(symbolCollection.keys());
+  t.equal(symbolKeys.length, 2, 'symbol keys returns correct count');
+  t.ok(symbolKeys.includes(symKey1), 'symbol keys includes symKey1');
+  t.ok(symbolKeys.includes(symKey2), 'symbol keys includes symKey2');
+
+  t.end();
+});
+
+test('values method', (t) => {
+  const emptyCollection = new ImmutableEntityCollection<string, string>({});
+  const emptyValues = Array.from(emptyCollection.values());
+  t.equal(emptyValues.length, 0, 'empty collection values returns empty array');
+
+  const pluginEntities: ImmutableEntitiesRecord<string, string> = {
+    'plugin-a': {
+      key1: 'value1',
+      key2: 'value2',
+    },
+    'plugin-b': {
+      key1: 'value1-b',
+    },
+  };
+  const collection = new ImmutableEntityCollection(pluginEntities);
+
+  const values = Array.from(collection.values());
+  t.equal(values.length, 2, 'values returns correct number of entity arrays');
+
+  // Check that each value is an array of entities
+  const key1Values = values.find(
+    (arr) => arr.includes('value1') && arr.includes('value1-b')
+  );
+  const key2Values = values.find(
+    (arr) => arr.includes('value2') && arr.length === 1
+  );
+
+  t.ok(key1Values, 'values includes key1 entity array');
+  t.equal(key1Values!.length, 2, 'key1 has 2 entities');
+  t.ok(key1Values!.includes('value1'), 'key1 includes value from plugin-a');
+  t.ok(key1Values!.includes('value1-b'), 'key1 includes value from plugin-b');
+
+  t.ok(key2Values, 'values includes key2 entity array');
+  t.equal(key2Values!.length, 1, 'key2 has 1 entity');
+  t.equal(key2Values![0], 'value2', 'key2 has correct value');
+
+  // Test immutability - returned arrays should be fresh copies
+  const firstValue = values[0];
+  firstValue.push('modified');
+  const secondCall = Array.from(collection.values());
+  t.equal(
+    secondCall[0].length,
+    firstValue.length - 1,
+    'modifying returned array does not affect collection'
+  );
+
+  t.end();
+});
+
+test('keys and values alignment', (t) => {
+  const pluginEntities: ImmutableEntitiesRecord<string, string> = {
+    'plugin-a': {
+      key1: 'value1',
+      key2: 'value2',
+    },
+    'plugin-b': {
+      key1: 'value1-b',
+      key3: 'value3',
+    },
+  };
+  const collection = new ImmutableEntityCollection(pluginEntities);
+
+  const keys = Array.from(collection.keys());
+  const values = Array.from(collection.values());
+  const entries = Array.from(collection.entries());
+
+  t.equal(keys.length, values.length, 'keys and values have same length');
+  t.equal(keys.length, entries.length, 'keys and entries have same length');
+
+  // Check that keys and values align with entries
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    const value = values[i];
+    const [entryKey, entryValue] = entries[i];
+
+    t.equal(key, entryKey, `key at index ${i} matches entry key`);
+    t.same(value, entryValue, `value at index ${i} matches entry value`);
+  }
+
+  t.end();
+});
