@@ -97,24 +97,12 @@ if (
 
 // isImmutablePlugin tests
 declare const pluginCandidate: unknown;
-declare const requiredEntityTypes: readonly PropertyKey[];
 
 // Basic usage without options
 expectType<boolean>(isImmutablePlugin(pluginCandidate));
 
-// With options parameter
-expectType<boolean>(
-  isImmutablePlugin(pluginCandidate, { requiredEntityTypes })
-);
-expectType<boolean>(isImmutablePlugin(pluginCandidate, {}));
-
 // Type predicate narrows correctly
 if (isImmutablePlugin(pluginCandidate)) {
-  expectType<ImmutablePlugin<ImmutableEntitiesRecord>>(pluginCandidate);
-}
-
-// With options and type predicate
-if (isImmutablePlugin(pluginCandidate, { requiredEntityTypes: ['assets'] })) {
   expectType<ImmutablePlugin<ImmutableEntitiesRecord>>(pluginCandidate);
 }
 
@@ -133,42 +121,14 @@ if (
   expectType<ImmutablePlugin<ImmutableEntitiesRecord>>(pluginAssertCandidate);
 }
 
-// After assertion with options, type is narrowed
-if (
-  typeof pluginAssertCandidate === 'object' &&
-  pluginAssertCandidate !== null
-) {
-  assertImmutablePlugin(pluginAssertCandidate, {
-    requiredEntityTypes: ['commands'],
-  });
-  expectType<ImmutablePlugin<ImmutableEntitiesRecord>>(pluginAssertCandidate);
-}
-
 // isImmutablePlugins tests
 declare const pluginsCandidate: unknown;
 
 // Basic usage without options
 expectType<boolean>(isImmutablePlugins(pluginsCandidate));
 
-// With options parameter
-expectType<boolean>(
-  isImmutablePlugins(pluginsCandidate, { requiredEntityTypes })
-);
-expectType<boolean>(isImmutablePlugins(pluginsCandidate, {}));
-
 // Type predicate narrows correctly
 if (isImmutablePlugins(pluginsCandidate)) {
-  expectType<Record<string, ImmutablePlugin<ImmutableEntitiesRecord>>>(
-    pluginsCandidate
-  );
-}
-
-// With options and type predicate
-if (
-  isImmutablePlugins(pluginsCandidate, {
-    requiredEntityTypes: ['assets', 'commands'],
-  })
-) {
   expectType<Record<string, ImmutablePlugin<ImmutableEntitiesRecord>>>(
     pluginsCandidate
   );
@@ -185,52 +145,3 @@ assertImmutablePlugins(pluginsAssertCandidate);
 expectType<Record<string, ImmutablePlugin<ImmutableEntitiesRecord>>>(
   pluginsAssertCandidate
 );
-
-// After assertion with options, type is narrowed
-pluginsAssertCandidate = {} as Record<string, unknown>; // Reset for next test
-assertImmutablePlugins(pluginsAssertCandidate, {
-  requiredEntityTypes: ['assets'],
-});
-expectType<Record<string, ImmutablePlugin<ImmutableEntitiesRecord>>>(
-  pluginsAssertCandidate
-);
-
-// Options parameter typing tests
-declare const validOptions: { requiredEntityTypes?: readonly PropertyKey[] };
-declare const invalidOptions1: { requiredEntityTypes: string[] };
-declare const invalidOptions2: { requiredEntityTypes: PropertyKey[] };
-declare const invalidOptions3: { wrongProperty: string[] };
-
-// Valid options
-expectType<boolean>(isImmutablePlugin(pluginCandidate, validOptions));
-expectType<boolean>(
-  isImmutablePlugin(pluginCandidate, { requiredEntityTypes: ['assets'] })
-);
-expectType<boolean>(
-  isImmutablePlugin(pluginCandidate, { requiredEntityTypes: [Symbol('test')] })
-);
-expectType<boolean>(
-  isImmutablePlugin(pluginCandidate, {
-    requiredEntityTypes: ['assets', Symbol('commands')],
-  })
-);
-
-// Readonly array requirement
-expectType<boolean>(
-  isImmutablePlugin(pluginCandidate, { requiredEntityTypes: ['test'] as const })
-);
-
-// Empty options should work
-expectType<boolean>(isImmutablePlugin(pluginCandidate, {}));
-
-// Undefined options should work
-expectType<boolean>(isImmutablePlugin(pluginCandidate, undefined));
-
-// Options parameter validation for all guard functions
-const testOptions = { requiredEntityTypes: ['assets', 'commands'] as const };
-
-// All plugin guards should accept the same options format
-expectType<boolean>(isImmutablePlugin(pluginCandidate, testOptions));
-assertImmutablePlugin(pluginAssertCandidate, testOptions);
-expectType<boolean>(isImmutablePlugins(pluginsCandidate, testOptions));
-assertImmutablePlugins(pluginsAssertCandidate, testOptions);

@@ -158,9 +158,7 @@ const applicationPlugins: ImmutablePlugins<ApplicationPlugin> = {
 } as const;
 
 // Host initialization
-const applicationHost = new ImmutableHost(applicationPlugins, {
-  requiredEntityTypes: ['assets', 'commands', 'eventHandlers'],
-});
+const applicationHost = new ImmutableHost(applicationPlugins);
 
 expectType<ImmutableHost<ApplicationPlugin>>(applicationHost);
 
@@ -269,11 +267,11 @@ for (const [pluginURN, plugin] of Object.entries(applicationHost.plugins)) {
   expectType<string>(plugin.version);
 }
 
-// Optional entity type handling in complex scenarios
+// Entity types that integrations may leave empty but must still declare
 type PartialEntities = {
   required: ImmutableEntities<string, string>;
-  optional1?: ImmutableEntities<string, number>;
-  optional2?: ImmutableEntities<symbol, boolean>;
+  numeric: ImmutableEntities<string, number>;
+  symbolic: ImmutableEntities<symbol, boolean>;
 };
 
 type PartialPlugin = ImmutablePlugin<PartialEntities>;
@@ -282,8 +280,8 @@ const partialPluginA: PartialPlugin = {
   name: 'partial-a',
   entities: {
     required: { key: 'value' },
-    optional1: { num: 42 },
-    // optional2 omitted
+    numeric: { num: 42 },
+    symbolic: {},
   },
 } as const;
 
@@ -291,8 +289,8 @@ const partialPluginB: PartialPlugin = {
   name: 'partial-b',
   entities: {
     required: { key: 'value' },
-    // optional1 omitted
-    optional2: { [Symbol('test')]: true },
+    numeric: {},
+    symbolic: { [Symbol('test')]: true },
   },
 } as const;
 
@@ -303,13 +301,16 @@ const partialPlugins: ImmutablePlugins<PartialPlugin> = {
 
 const partialHost = new ImmutableHost(partialPlugins);
 
-// Required entity always available
+// All entity collections exist regardless of whether integrations provided data
 expectType<ImmutableEntityCollection<string, string>>(
   partialHost.entities.required
 );
-
-// Optional entities handling - access directly without runtime checks for type tests
-// These properties exist in the type even if they may be empty at runtime
+expectType<ImmutableEntityCollection<string, number>>(
+  partialHost.entities.numeric
+);
+expectType<ImmutableEntityCollection<symbol, boolean>>(
+  partialHost.entities.symbolic
+);
 
 // Multi-plugin entity conflict resolution patterns
 const allAssets = applicationHost.entities.assets.flat();

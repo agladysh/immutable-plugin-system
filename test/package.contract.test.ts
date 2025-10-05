@@ -150,88 +150,80 @@ t.test(
   }
 );
 
-t.test(
-  'plugin and plugins guards: required types, mismatch, assertions',
-  (t) => {
-    type E = {
-      a?: ImmutableEntities<string, string>;
-      b?: ImmutableEntities<string, number>;
-    };
-    type P = ImmutablePlugin<E>;
-    const ok: P = { name: 'ok', entities: { a: { k: 'v' } } };
-    const badName = { name: 'mismatch', entities: { a: { k: 'v' } } } as P;
-    const badInner = {
-      name: 'bad',
-      entities: { a: { k: undefined as unknown as string } },
-    } as P;
+t.test('plugin and plugins guards: structural validation', (t) => {
+  type E = {
+    a: ImmutableEntities<string, string>;
+    b: ImmutableEntities<string, number>;
+  };
+  type P = ImmutablePlugin<E>;
+  const ok: P = { name: 'ok', entities: { a: { k: 'v' }, b: {} } };
+  const badName = { name: 'mismatch', entities: { a: { k: 'v' }, b: {} } } as P;
+  const badInner = {
+    name: 'bad',
+    entities: { a: { k: undefined as unknown as string }, b: {} },
+  } as P;
 
-    t.equal(isImmutablePlugin(ok), true, 'isImmutablePlugin accepts');
-    t.equal(
-      isImmutablePlugin({} as unknown),
-      false,
-      'isImmutablePlugin rejects non-object'
-    );
-    t.equal(
-      isImmutablePlugin(ok, { requiredEntityTypes: ['a'] }),
-      true,
-      'required a present'
-    );
-    t.equal(
-      isImmutablePlugin(ok, { requiredEntityTypes: ['b'] }),
-      false,
-      'required b missing'
-    );
-    t.equal(
-      isImmutablePlugin(badInner, { requiredEntityTypes: ['a'] }),
-      false,
-      'invalid inner rejected'
-    );
-    t.doesNotThrow(
-      () => assertImmutablePlugin(ok),
-      'assertImmutablePlugin accepts'
-    );
-    t.throws(
-      () => assertImmutablePlugin({} as unknown),
-      /Invalid plugin structure/,
-      'assertImmutablePlugin rejects non-object'
-    );
+  t.equal(isImmutablePlugin(ok), true, 'isImmutablePlugin accepts');
+  t.equal(
+    isImmutablePlugin({} as unknown),
+    false,
+    'isImmutablePlugin rejects non-object'
+  );
+  t.equal(
+    isImmutablePlugin(badInner),
+    false,
+    'isImmutablePlugin rejects invalid inner record'
+  );
+  t.doesNotThrow(
+    () => assertImmutablePlugin(ok),
+    'assertImmutablePlugin accepts'
+  );
+  t.throws(
+    () => assertImmutablePlugin({} as unknown),
+    /Invalid plugin structure/,
+    'assertImmutablePlugin rejects non-object'
+  );
+  t.throws(
+    () => assertImmutablePlugin(badInner),
+    /Invalid plugin structure/,
+    'assertImmutablePlugin rejects invalid inner record'
+  );
 
-    const rec: ImmutablePlugins<P> = { ok } as const;
-    const mismatch = { bad: badName } as unknown as Record<string, P>;
-    t.equal(isImmutablePlugins(rec), true, 'isImmutablePlugins accepts');
+  const rec: ImmutablePlugins<P> = { ok } as const;
+  const mismatch = { bad: badName } as unknown as Record<string, P>;
+  t.equal(isImmutablePlugins(rec), true, 'isImmutablePlugins accepts');
+  t.equal(
+    isImmutablePlugins(mismatch),
+    false,
+    'isImmutablePlugins rejects name mismatch'
+  );
+  // Predicate explicit mismatch via package export
+  {
+    type E2 = { a: ImmutableEntities<string, string> };
+    const bad = {
+      ok: { name: 'wrong', entities: { a: { k: 'v' } } },
+    } as unknown as ImmutablePlugins<ImmutablePlugin<E2>>;
     t.equal(
-      isImmutablePlugins(mismatch),
+      isImmutablePlugins(bad),
       false,
-      'isImmutablePlugins rejects name mismatch'
+      'predicate: name/URN mismatch returns false'
     );
-    // Predicate explicit mismatch via package export
-    {
-      type E2 = { a: ImmutableEntities<string, string> };
-      const bad = {
-        ok: { name: 'wrong', entities: { a: { k: 'v' } } },
-      } as unknown as ImmutablePlugins<ImmutablePlugin<E2>>;
-      t.equal(
-        isImmutablePlugins(bad),
-        false,
-        'predicate: name/URN mismatch returns false'
-      );
-    }
-    t.doesNotThrow(
-      () => assertImmutablePlugins(rec),
-      'assertImmutablePlugins accepts'
-    );
-    t.throws(
-      () =>
-        assertImmutablePlugins({ bad: undefined } as unknown as Record<
-          string,
-          unknown
-        >),
-      /Invalid plugin structure/,
-      'assertImmutablePlugins rejects invalid plugin value'
-    );
-    t.end();
   }
-);
+  t.doesNotThrow(
+    () => assertImmutablePlugins(rec),
+    'assertImmutablePlugins accepts'
+  );
+  t.throws(
+    () =>
+      assertImmutablePlugins({ bad: undefined } as unknown as Record<
+        string,
+        unknown
+      >),
+    /Invalid plugin structure/,
+    'assertImmutablePlugins rejects invalid plugin value'
+  );
+  t.end();
+});
 
 t.test(
   'package ImmutableEntityCollection: empty and iterator end branch',
@@ -280,31 +272,23 @@ t.test(
   }
 );
 
-t.test(
-  'plugin predicate: required type re-check fails after shape changes',
-  (t) => {
-    // entities.a returns valid record on first read, then an invalid value
-    let toggled = false;
-    const entities = {} as Record<string, unknown>;
-    Object.defineProperty(entities, 'a', {
-      enumerable: true,
-      get() {
-        const v = toggled ? 1 : { k: 'v' };
-        toggled = true;
-        return v as unknown;
-      },
-    });
-    const plugin = { name: 'p', entities } as unknown as ImmutablePlugin<{
-      a: ImmutableEntities<string, string>;
-    }>;
-    t.equal(
-      isImmutablePlugin(plugin, { requiredEntityTypes: ['a'] }),
-      false,
-      'predicate re-check fails when inner record becomes invalid'
-    );
-    t.end();
-  }
-);
+t.test('plugin predicate rejects non-record entity map', (t) => {
+  const plugin = {
+    name: 'p',
+    entities: { a: 'not-a-record' },
+  } as unknown;
+  t.equal(
+    isImmutablePlugin(plugin),
+    false,
+    'predicate rejects non-record entities'
+  );
+  t.throws(
+    () => assertImmutablePlugin(plugin),
+    /record of records/,
+    'assertion throws on non-record entity'
+  );
+  t.end();
+});
 
 t.test('plugins predicate: invalid plugin value returns false', (t) => {
   t.equal(

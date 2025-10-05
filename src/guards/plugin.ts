@@ -1,28 +1,21 @@
 import type { ImmutableEntitiesRecord, ImmutablePlugin } from '../types.js';
 import { isPlainObject } from './plain-object.js';
 import { isEntitiesRecord } from './entities-record.js';
-import { isEntityRecord } from './entity-record.js';
+import { assertEntityRecord } from './entity-record.js';
 
 /**
- * Type guard for ImmutablePlugin shape with optional enforcement of required entity types.
+ * Type guard for ImmutablePlugin shape.
  *
  * Validates:
  * - `name` exists and is a non-empty string.
  * - `entities` is a plain object (container-level validation).
  * - Each inner entity map is a valid entity record (plain + no invalid keys), for both string and symbol keys.
- * - Optionally enforces that specific entity types are present and valid when `options.requiredEntityTypes` is provided.
  *
  * @param plugin - Runtime candidate
- * @param options - Optional validation options. Typing note: `requiredEntityTypes`
- *   is provided as `readonly PropertyKey[]` here because no generic plugin
- *   context exists in standalone guards. The `ImmutableHost` constructor accepts
- *   a compile-time typed list `readonly (keyof P['entities'])[]` for the same
- *   semantics.
  * @returns True if candidate matches ImmutablePlugin runtime contract
  */
 export function isImmutablePlugin(
-  plugin: unknown,
-  options?: { requiredEntityTypes?: readonly PropertyKey[] }
+  plugin: unknown
 ): plugin is ImmutablePlugin<ImmutableEntitiesRecord> {
   if (
     !plugin ||
@@ -41,36 +34,24 @@ export function isImmutablePlugin(
     return false;
   }
 
-  // Optional enforcement of required entity types if provided by the integration.
-  if (options?.requiredEntityTypes && options.requiredEntityTypes.length > 0) {
-    const entities = p.entities as Record<PropertyKey, unknown>;
-    for (const et of options.requiredEntityTypes) {
-      // Require presence as own property and validate inner record shape
-      if (!Object.prototype.hasOwnProperty.call(entities, et)) {
-        return false;
-      }
-      if (!isEntityRecord((entities as Record<PropertyKey, unknown>)[et])) {
-        return false;
-      }
-    }
-  }
-
   return true;
 }
 
 /**
- * Assertion over a single plugin. Structural validation only by default;
- * optionally enforces presence and validity of `options.requiredEntityTypes`.
- * Typing note: see `isImmutablePlugin` for rationale on the `PropertyKey[]`
- * shape of `requiredEntityTypes` in guards vs host constructor typing.
+ * Assertion over a single plugin. Structural validation only by default.
  */
 export function assertImmutablePlugin(
-  plugin: unknown,
-  options?: { requiredEntityTypes?: readonly PropertyKey[] }
+  plugin: unknown
 ): asserts plugin is ImmutablePlugin<ImmutableEntitiesRecord> {
-  if (!isImmutablePlugin(plugin, options)) {
+  if (!isImmutablePlugin(plugin)) {
     throw new TypeError(
       "Invalid plugin structure: plugin must have 'name' (non-empty string) and 'entities' (record of records)"
     );
+  }
+
+  const entities = (plugin as ImmutablePlugin<ImmutableEntitiesRecord>)
+    .entities;
+  for (const key of Reflect.ownKeys(entities)) {
+    assertEntityRecord((entities as Record<PropertyKey, unknown>)[key]);
   }
 }

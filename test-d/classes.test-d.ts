@@ -120,7 +120,7 @@ for (const [entity, key, pluginURN] of symbolCollection) {
 type TestEntities = {
   assets: Record<string, string>;
   commands: Record<string, () => void>;
-  optional?: Record<string, number>;
+  metrics: Record<string, number>;
 };
 
 type TestPlugin = ImmutablePlugin<TestEntities>;
@@ -132,17 +132,6 @@ declare const testHost: ImmutableHost<TestPlugin>;
 // Constructor without options
 expectType<ImmutableHost<TestPlugin>>(new ImmutableHost(testPlugins));
 
-// Constructor with options
-expectType<ImmutableHost<TestPlugin>>(
-  new ImmutableHost(testPlugins, { requiredEntityTypes: ['assets'] })
-);
-expectType<ImmutableHost<TestPlugin>>(
-  new ImmutableHost(testPlugins, {
-    requiredEntityTypes: ['assets', 'commands'],
-  })
-);
-expectType<ImmutableHost<TestPlugin>>(new ImmutableHost(testPlugins, {}));
-
 // plugins property tests
 expectType<ImmutablePlugins<TestPlugin>>(testHost.plugins);
 expectType<TestPlugin>(testHost.plugins['somePluginURN']);
@@ -152,8 +141,9 @@ expectType<ImmutableEntityCollection<string, string>>(testHost.entities.assets);
 expectType<ImmutableEntityCollection<string, () => void>>(
   testHost.entities.commands
 );
-
-// Optional entity type handling - skip for type test as it may not exist
+expectType<ImmutableEntityCollection<string, number>>(
+  testHost.entities.metrics
+);
 
 // Host requires plugins parameter
 expectType<ImmutableHost<TestPlugin>>(testHost);
@@ -193,23 +183,14 @@ expectType<ImmutableEntityCollection<string | symbol, {}>>(
 expectError((testHost.plugins = {}));
 expectError((testHost.entities = {} as any));
 
+// Optional entity declarations are rejected at the type level
+type OptionalEntities = {
+  optional?: Record<string, number>;
+};
+
+expectError<ImmutablePlugin<OptionalEntities>>({
+  name: 'invalid-optional',
+  entities: {},
+});
+
 // Constructor options parameter typing
-declare const validRequiredTypes: readonly (keyof TestEntities)[];
-declare const validRequiredTypesConst: readonly ['assets', 'commands'];
-
-expectType<ImmutableHost<TestPlugin>>(
-  new ImmutableHost(testPlugins, { requiredEntityTypes: validRequiredTypes })
-);
-expectType<ImmutableHost<TestPlugin>>(
-  new ImmutableHost(testPlugins, {
-    requiredEntityTypes: validRequiredTypesConst,
-  })
-);
-
-// Symbol keys in required entity types
-// Symbol keys not applicable for TestEntities
-
-// Empty required entity types
-expectType<ImmutableHost<TestPlugin>>(
-  new ImmutableHost(testPlugins, { requiredEntityTypes: [] })
-);

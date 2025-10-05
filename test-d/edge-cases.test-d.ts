@@ -103,25 +103,27 @@ expectType<PluginURN>(unicodeUrn);
 declare const symKey: symbol;
 expectType<ImmutableEntityKey>(symKey);
 
-// Edge case: Mixed optional and required with complex constraints
-type ComplexOptionalPlugin = ImmutablePlugin<{
+// Edge case: Complex entity set where some collections may remain empty
+type ComplexEntitiesPlugin = ImmutablePlugin<{
   required1: ImmutableEntities<string, string>;
   required2: ImmutableEntities<symbol, number>;
-  optional1?: ImmutableEntities<string, boolean>;
-  optional2?: ImmutableEntities<symbol, string>;
-  optional3?: ImmutableEntities<string | symbol, unknown>;
+  optional1: ImmutableEntities<string, boolean>;
+  optional2: ImmutableEntities<symbol, string>;
+  optional3: ImmutableEntities<string | symbol, unknown>;
 }>;
 
-const minimalComplexPlugin: ComplexOptionalPlugin = {
+const minimalComplexPlugin: ComplexEntitiesPlugin = {
   name: 'minimal-complex',
   entities: {
     required1: { key: 'value' },
     required2: { [Symbol('key')]: 42 },
-    // All optional types omitted
+    optional1: {},
+    optional2: {},
+    optional3: {},
   },
 } as const;
 
-const maximalComplexPlugin: ComplexOptionalPlugin = {
+const maximalComplexPlugin: ComplexEntitiesPlugin = {
   name: 'maximal-complex',
   entities: {
     required1: { key: 'value' },
@@ -135,8 +137,8 @@ const maximalComplexPlugin: ComplexOptionalPlugin = {
   },
 } as const;
 
-expectType<ComplexOptionalPlugin>(minimalComplexPlugin);
-expectType<ComplexOptionalPlugin>(maximalComplexPlugin);
+expectType<ComplexEntitiesPlugin>(minimalComplexPlugin);
+expectType<ComplexEntitiesPlugin>(maximalComplexPlugin);
 
 // Edge case: Plugin with function entity values
 type FunctionEntity = () => {

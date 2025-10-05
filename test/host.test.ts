@@ -18,55 +18,57 @@ test('ImmutableHost can be instantiated', (t) => {
   t.end();
 });
 
-test('host options: requiredEntityTypes enforced at runtime', (t) => {
+test('host rejects plugins missing declared entity types', (t) => {
   type Entities = {
     assets: ImmutableEntities<string, string>;
-    commands?: ImmutableEntities<string, string>;
+    commands: ImmutableEntities<string, string>;
   };
   type P = ImmutablePlugin<Entities>;
 
-  const valid: P = { name: 'valid', entities: { assets: { ok: 'v' } } };
+  const valid: P = {
+    name: 'valid',
+    entities: { assets: { ok: 'v' }, commands: {} },
+  };
   const invalid = {
     name: 'invalid',
-    entities: { commands: { run: 'noop' } },
+    entities: { assets: { nope: 'nope' } },
   } as unknown as P;
 
   t.throws(
-    () =>
-      new ImmutableHost<P>(
-        { valid, invalid },
-        { requiredEntityTypes: ['assets'] }
-      ),
-    'missing required entity type is rejected when configured'
+    () => new ImmutableHost<P>({ valid, invalid }),
+    /missing entity type/i,
+    'host rejects missing entity type even without explicit configuration'
   );
 
   t.doesNotThrow(
-    () => new ImmutableHost<P>({ valid }, { requiredEntityTypes: ['assets'] }),
-    'host accepts when all plugins satisfy required types'
+    () => new ImmutableHost<P>({ valid }),
+    'host accepts when plugins supply all entity types'
   );
 
   t.end();
 });
 
-test('host options: symbol entity type required', (t) => {
-  const sym = Symbol('sym-req');
+test('host rejects symbol entity type omissions', (t) => {
+  const sym = Symbol('sym-required');
 
   type Entities = {
-    [sym]?: ImmutableEntities<string, string>;
+    [sym]: ImmutableEntities<string, string>;
   };
+
   type P = ImmutablePlugin<Entities>;
 
   const ok: P = { name: 'ok', entities: { [sym]: { a: '1' } } } as P;
   const bad = { name: 'bad', entities: {} } as unknown as P;
 
-  t.doesNotThrow(
-    () => new ImmutableHost<P>({ ok }, { requiredEntityTypes: [sym] }),
-    'host accepts when symbol entity type present'
+  t.throws(
+    () => new ImmutableHost<P>({ bad, ok }),
+    /missing entity type/i,
+    'host rejects plugins that omit symbol entity types'
   );
 
-  t.throws(
-    () => new ImmutableHost<P>({ bad }, { requiredEntityTypes: [sym] }),
-    'host rejects when required symbol entity type missing'
+  t.doesNotThrow(
+    () => new ImmutableHost<P>({ ok }),
+    'host accepts symbol entity type when present'
   );
 
   t.end();
@@ -160,12 +162,14 @@ test('plugins may omit arbitrary entity sections', (t) => {
     name: 'omit-a',
     entities: {
       assets: { a1: 'A-asset-1', shared: 'A-shared' },
+      commands: {},
     },
   };
 
   const pluginB: TestPlugin = {
     name: 'omit-b',
     entities: {
+      assets: {},
       commands: { c1: 'B-command-1' },
     },
   };
@@ -208,6 +212,7 @@ test('constructor with multiple plugins', (t) => {
       commands: {
         'cmd-a': 'command-a',
       },
+      events: {},
     },
   };
 
@@ -218,6 +223,7 @@ test('constructor with multiple plugins', (t) => {
         shared: 'value-b',
         'unique-b': 'unique-value-b',
       },
+      commands: {},
       events: {
         event1: 'handler1',
       },
@@ -284,6 +290,7 @@ test('entity collection building with overlapping entity types', (t) => {
     entities: {
       type1: { key1: 'value1-1', key2: 'value2-1' },
       type2: { keyA: 'valueA-1' },
+      type3: {},
     },
   };
 
@@ -291,6 +298,7 @@ test('entity collection building with overlapping entity types', (t) => {
     name: 'plugin-2',
     entities: {
       type1: { key1: 'value1-2', key3: 'value3-2' },
+      type2: {},
       type3: { keyX: 'valueX-2' },
     },
   };
@@ -573,12 +581,16 @@ test('plugins with no shared entity types', (t) => {
     entities: {
       typeA: { key1: 'value1' },
       typeB: { key2: 'value2' },
+      typeC: {},
+      typeD: {},
     },
   };
 
   const plugin2: TestPlugin = {
     name: 'plugin-2',
     entities: {
+      typeA: {},
+      typeB: {},
       typeC: { key3: 'value3' },
       typeD: { key4: 'value4' },
     },
@@ -613,6 +625,7 @@ test('empty entity objects handling', (t) => {
     entities: {
       emptyType: {},
       normalType: { key1: 'value1' },
+      anotherEmpty: {},
     },
   };
 
@@ -621,6 +634,7 @@ test('empty entity objects handling', (t) => {
     entities: {
       emptyType: {},
       anotherEmpty: {},
+      normalType: {},
     },
   };
 

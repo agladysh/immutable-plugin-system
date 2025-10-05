@@ -7,7 +7,7 @@ import type {
 } from './types.js';
 import { ImmutableEntityCollection } from './ImmutableEntityCollection.js';
 import { assertImmutablePlugins } from './guards/plugins.js';
-import { isEntityRecord } from './guards/entity-record.js';
+import { assertEntityRecord } from './guards/entity-record.js';
 
 /**
  * Typed helper to get all own keys (including symbols) of an object.
@@ -31,7 +31,7 @@ export type ImmutableEntityCollections<
   K extends PropertyKey,
   T extends { [k in K]: ImmutableEntitiesRecord[PropertyKey] },
 > = {
-  readonly [k in K]: ImmutableEntityCollection<
+  readonly [k in K]-?: ImmutableEntityCollection<
     Extract<keyof T[k], string | symbol>,
     T[k][keyof T[k]]
   >;
@@ -72,34 +72,23 @@ export class ImmutableHost<P extends ImmutablePlugin<ImmutableEntitiesRecord>> {
 
   /**
    * Creates a new ImmutableHost with the provided plugins.
-   * Groups entities from all plugins by entity type into collections.
+   * Groups entities from all plugins by entity type into collections and
+   * enforces that every declared entity type is present on each plugin.
    *
    * @param plugins - Record of plugins mapped by their URNs
-   * @param options - Optional runtime validation options for integrations.
-   *  - `requiredEntityTypes`: if provided, each plugin must have these entity
-   *    types present as own properties and valid inner records. This augments
-   *    structural validation; primary enforcement remains at the type level.
-   *
-   * Typing note: The constructor accepts
-   * `readonly (keyof P['entities'])[]` for `requiredEntityTypes` since the
-   * generic `P` is known here. Standalone guard functions accept a runtime
-   * `readonly PropertyKey[]` list for the same semantics (no generic context).
    * @throws TypeError if any plugin is invalid, has mismatched URN, or is
-   *  missing a required entity type specified in `options`.
+   *  missing a declared entity type
    */
-  constructor(
-    plugins: ImmutablePlugins<P>,
-    options?: { requiredEntityTypes?: readonly (keyof P['entities'])[] }
-  ) {
+  constructor(plugins: ImmutablePlugins<P>) {
     // Validate plugins at runtime for additional type safety
-    assertImmutablePlugins(plugins, options);
+    assertImmutablePlugins(plugins);
     this.plugins = { ...plugins };
 
     // Build entity collections by grouping entities from all plugins by type
     const entityCollections: Partial<ImmutableEntityCollectionsFromPlugin<P>> =
       {};
 
-    // Get all unique entity type names across all plugins using efficient key iteration
+    // Collect the set of entity types advertised by the plugins
     const allEntityTypes = new Set<keyof P['entities']>();
     for (const plugin of Object.values(plugins)) {
       // Include symbol keys as entity types
@@ -107,6 +96,18 @@ export class ImmutableHost<P extends ImmutablePlugin<ImmutableEntitiesRecord>> {
         keyof P['entities']
       >) {
         allEntityTypes.add(entityType);
+      }
+    }
+
+    // Ensure there is a consistent set of entity types across all plugins
+    for (const [pluginURN, plugin] of Object.entries(plugins)) {
+      for (const entityType of allEntityTypes) {
+        if (!Object.hasOwn(plugin.entities, entityType as PropertyKey)) {
+          throw new TypeError(
+            `plugin "${pluginURN}" is missing entity type ${String(entityType)}`
+          );
+        }
+        assertEntityRecord(plugin.entities[entityType]);
       }
     }
 
@@ -126,10 +127,11 @@ export class ImmutableHost<P extends ImmutablePlugin<ImmutableEntitiesRecord>> {
       // Collect entities of this type from all plugins
       for (const [pluginURN, plugin] of Object.entries(plugins)) {
         const entitiesOfType = plugin.entities[entityType];
-        if (entitiesOfType != null && isEntityRecord(entitiesOfType)) {
-          pluginEntitiesForType[pluginURN] =
-            entitiesOfType as ImmutableEntities<KType, VType>;
-        }
+        assertEntityRecord(entitiesOfType);
+        pluginEntitiesForType[pluginURN] = entitiesOfType as ImmutableEntities<
+          KType,
+          VType
+        >;
       }
 
       // Create entity collection for this entity type

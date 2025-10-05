@@ -6,6 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2025-10-05
+
+### Changed
+
+- Removed optional top-level entity support; plugins must now provide every
+  declared entity type and use empty maps to signal "no entities"
+- Dropped the `requiredEntityTypes` runtime escape hatch; `ImmutableHost` and
+  guard APIs enforce entity completeness unconditionally
+- Strengthened runtime validation so the host throws when a plugin omits any
+  declared entity type
+- Updated documentation and examples to reflect deterministic entity discovery
+
+### Fixed
+
+- Prevented plugins with mismatched entity schemas from silently producing
+  partial collections by failing fast during host construction
+
+Implements Specification v1.3.0 (r1.3.0)
+
 ## [0.2.0] - 2025-09-26
 
 ### Added

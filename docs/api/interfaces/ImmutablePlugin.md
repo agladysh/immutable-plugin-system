@@ -19,7 +19,7 @@ The entities configuration type, where each entity type must be a record
 
 ### entities
 
-> `readonly` **entities**: `Readonly`\<`C`\>
+> `readonly` **entities**: `Readonly`\<`{ [K in keyof C]-?: Exclude<C[K], undefined> }`\>
 
 Defined in: [types.ts:103](https://github.com/agladysh/immutable-plugin-system/blob/main/src/types.ts#L103)
 

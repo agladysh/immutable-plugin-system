@@ -100,7 +100,7 @@ export interface ImmutablePlugin<
    * The entities exposed by this plugin.
    * All entities are immutable and cannot be modified at runtime.
    */
-  readonly entities: Readonly<C>;
+  readonly entities: Readonly<{ [K in keyof C]-?: Exclude<C[K], undefined> }>;
 }
 
 /**

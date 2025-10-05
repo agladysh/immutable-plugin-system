@@ -51,25 +51,37 @@ expectType<ImmutableEntityCollection<string | symbol, {}>>(
   mixedKeyHost.entities.mixedKeys
 );
 
-// Host with optional entity types
-type OptionalEntities = {
+// Host with entity types that may be empty at runtime
+type EmptyCapableEntities = {
   required: ImmutableEntities<string, string>;
-  optional?: ImmutableEntities<string, number>;
-  alsoOptional?: ImmutableEntities<symbol, boolean>;
+  mayBeEmpty: ImmutableEntities<string, number>;
+  alsoEmpty: ImmutableEntities<symbol, boolean>;
 };
 
-type OptionalPlugin = ImmutablePlugin<OptionalEntities>;
-type OptionalHost = ImmutableHost<OptionalPlugin>;
+type EmptyCapablePlugin = ImmutablePlugin<EmptyCapableEntities>;
+type EmptyCapableHost = ImmutableHost<EmptyCapablePlugin>;
 
-declare const optionalHost: OptionalHost;
+declare const emptyCapableHost: EmptyCapableHost;
 
-// Required entity type is always present
 expectType<ImmutableEntityCollection<string, string>>(
-  optionalHost.entities.required
+  emptyCapableHost.entities.required
+);
+expectType<ImmutableEntityCollection<string, number>>(
+  emptyCapableHost.entities.mayBeEmpty
+);
+expectType<ImmutableEntityCollection<symbol, boolean>>(
+  emptyCapableHost.entities.alsoEmpty
 );
 
-// Optional entity types handling - these properties may not exist at runtime
-// but are accessible through the type system for optional properties
+// Optional entity declarations should be rejected at compile time
+type InvalidOptionalEntities = {
+  optional?: ImmutableEntities<string, string>;
+};
+
+expectError<ImmutablePlugin<InvalidOptionalEntities>>({
+  name: 'invalid',
+  entities: {},
+});
 
 // Host with complex nested entity types
 type ComplexEntity = {
@@ -121,39 +133,9 @@ if (complexEntities.length > 0) {
   expectType<(data: unknown) => boolean>(firstEntity.handlers.onUpdate);
 }
 
-// Host constructor options with requiredEntityTypes
 declare const pluginsForOptions: ImmutablePlugins<SimplePlugin>;
 
 expectType<SimpleHost>(new ImmutableHost(pluginsForOptions));
-expectType<SimpleHost>(new ImmutableHost(pluginsForOptions, {}));
-expectType<SimpleHost>(
-  new ImmutableHost(pluginsForOptions, { requiredEntityTypes: ['assets'] })
-);
-expectType<SimpleHost>(
-  new ImmutableHost(pluginsForOptions, {
-    requiredEntityTypes: ['assets', 'commands'],
-  })
-);
-expectType<SimpleHost>(
-  new ImmutableHost(pluginsForOptions, { requiredEntityTypes: [] })
-);
-
-// Host constructor with symbol entity types in requiredEntityTypes
-type SymbolEntityPlugin = ImmutablePlugin<{
-  symbolType: ImmutableEntities<string, string>;
-  stringType: ImmutableEntities<string, number>;
-}>;
-
-declare const symbolPlugins: ImmutablePlugins<SymbolEntityPlugin>;
-
-expectType<ImmutableHost<SymbolEntityPlugin>>(
-  new ImmutableHost(symbolPlugins, { requiredEntityTypes: ['symbolType'] })
-);
-expectType<ImmutableHost<SymbolEntityPlugin>>(
-  new ImmutableHost(symbolPlugins, {
-    requiredEntityTypes: ['stringType', 'symbolType'],
-  })
-);
 
 // Multiple plugin types in single host
 type PluginA = ImmutablePlugin<{

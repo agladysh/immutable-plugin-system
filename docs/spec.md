@@ -1,7 +1,7 @@
 # Specification: Immutable Plugin System
 
-- **Specification Version:** 1.2.0
-- **Document Revision:** 1.2.0
+- **Specification Version:** 1.3.0
+- **Document Revision:** 1.3.0
 - **Status:** FINAL
 
 This document specifies a minimalist strongly typed immutable plugin system for
@@ -107,37 +107,35 @@ Via negativa, we're:
 - If an integration needs enforcement, it SHOULD freeze values before passing
   them to the host, or wrap host access in an integration‑specific layer.
 
-#### Entity Type Optionality
+#### Entity Type Presence
 
 - The `entities` property on every plugin is mandatory.
 
-- Within `entities`, each entity type (top‑level field) is required or optional
-  exactly as declared by the concrete `Entities` type used by the host. Optional
-  entity types MAY be omitted; required entity types MUST be present.
+- Within `entities`, every entity type declared by the integration’s concrete
+  schema MUST be defined as an own property on the plugin. Plugins that have no
+  contributions for a given entity type MUST supply an empty `ImmutableEntities`
+  map instead of omitting the property.
 
-- A plugin MAY provide `entities: {}` if and only if all entity types in the
-  concrete `Entities` type are optional.
+- Omitted entity types are specification violations. The host performs runtime
+  validation and fails fast when a plugin is missing any declared entity type.
 
-- Integrations MUST treat an omitted optional entity type as contributing no
-  entities (i.e., an empty collection during discovery).
-
-- Required vs. optional status is normative at the type level (TypeScript).
-  Integrations MAY additionally enforce at runtime that required entity types
-  are present when such requirement is knowable for the concrete host
-  configuration.
+- Empty maps are the canonical representation of “no entities”. Integrations MAY
+  apply additional semantics (e.g., logging, warnings) around empty maps, but
+  the host always exposes the collection regardless of population.
 
 ##### Runtime Validation Rationale
 
-- Primary contract: TypeScript. Required/optional entity types are defined by
-  the integration’s concrete `Entities` type and enforced at compile time.
+- Primary contract: TypeScript. Plugin schemas reject optional properties so the
+  absence of an entity type becomes a compile-time error.
 
-- Runtime ambiguity: Without an explicit schema, a host cannot infer whether an
-  omitted entity type is optional or a violation. Inferring from "what other
-  plugins provide" would incorrectly turn optional types into required ones.
+- Runtime enforcement: the host validates that each plugin supplies all declared
+  entity types and that every inner map is a valid entity record. This ensures
+  deterministic discovery even in dynamic loading scenarios.
 
-- Library stance: The library always validates container shapes and inner record
-  invariants. Enforcement of required entity types at runtime is integration‑
-  dependent and optional, enabled by providing explicit `requiredEntityTypes`.
+- Library stance: Runtime validation focuses on the single invariant of
+  entity-type presence plus existing structural checks. Integrations are free to
+  layer additional validation but are not required to configure anything beyond
+  providing complete entities objects.
 
 ### Out of Scope
 
@@ -260,10 +258,7 @@ type ImmutableEntityCollectionsFromPlugin<P extends ImmutablePlugin> =
 
 // Intentionally no default parameter to prevent accidental use.
 export class ImmutableHost<P extends ImmutablePlugin> {
-  constructor(
-    plugins: ImmutablePlugins<P>,
-    options?: { requiredEntityTypes?: readonly (keyof P['entities'])[] }
-  );
+  constructor(plugins: ImmutablePlugins<P>);
   readonly plugins: ImmutablePlugins<P>;
   readonly entities: ImmutableEntityCollectionsFromPlugin<P>;
 }
@@ -583,11 +578,11 @@ No external dependencies.
 
 ### r1.1.4 / v1.1.0
 
-- Entity keys: numeric-like strings are now explicitly rejected at runtime for
-  inner entity maps to prevent ambiguity with JavaScript numeric key coercion
-  (e.g., "0", "-1", "1.5", "1e3"). This is stricter than the type‑level
-  exclusion of numeric keys and avoids collisions. Integrations MUST use textual
-  identifiers that are not numeric-like.
+- Entity keys: numeric-like strings are explicitly rejected at runtime for inner
+  entity maps to prevent ambiguity with JavaScript numeric key coercion (e.g.,
+  "0", "-1", "1.5", "1e3"). This is stricter than the type‑level exclusion of
+  numeric keys and avoids collisions. Integrations MUST use textual identifiers
+  that are not numeric-like.
 - Entity values: clarified and consolidated the rule that values MUST be defined
   (undefined is forbidden). Public types now explicitly exclude undefined via
   `NonNullable<V>` in the `ImmutableEntities` snippet; runtime guards enforce
@@ -615,6 +610,15 @@ No external dependencies.
 - Host options: Added a note clarifying that the constructor accepts
   `readonly (keyof P['entities'])[]`, while standalone guard functions accept a
   runtime `readonly PropertyKey[]` list; semantics are the same.
+
+### r1.3.0 / v1.3.0
+
+- Removed optional entity type support: plugins MUST define every entity type
+  declared by the integration and use empty maps to signal “no entities”.
+- Eliminated the `requiredEntityTypes` runtime option; the host now enforces
+  completeness unconditionally.
+- Updated narrative to emphasise deterministic discovery and the empty-map
+  convention for absent data.
 
 ### r1.1.2 / v1.1.0
 
@@ -649,10 +653,9 @@ No external dependencies.
 
 - Key type refinement for inner maps:
   - Added `ImmutableEntityKey = Exclude<PropertyKey, number | ''>`.
-  - `ImmutableEntities<K, V>` now uses `K extends ImmutableEntityKey` (was
-    `PropertyKey`). This excludes numeric and empty-string keys from inner
-    entity maps to avoid JS numeric key coercion ambiguity and degenerate
-    identifiers.
+- `ImmutableEntities<K, V>` uses `K extends ImmutableEntityKey` (was
+  `PropertyKey`). This excludes numeric and empty-string keys from inner entity
+  maps to avoid JS numeric key coercion ambiguity and degenerate identifiers.
 - New top-level entities alias:
   - Introduced `ImmutableEntitiesRecord<K, V>` to model the entities container
     mapping entity types to inner entity maps.

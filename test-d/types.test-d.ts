@@ -4,6 +4,7 @@ import type {
   ImmutableEntityKey,
   ImmutableEntities,
   ImmutableEntitiesRecord,
+  ImmutableEntityCollection,
   ImmutablePlugin,
   ImmutablePlugins,
   NonEmptyString,
@@ -126,20 +127,30 @@ declare const defaultPlugin: DefaultPlugin;
 expectType<PluginURN>(defaultPlugin.name);
 expectType<Readonly<ImmutableEntitiesRecord>>(defaultPlugin.entities);
 
-// Plugin with optional entity types
-type OptionalEntitiesPlugin = ImmutablePlugin<{
+// Plugin with entity types that may be empty but are always present
+type AlwaysPresentEntitiesPlugin = ImmutablePlugin<{
   required: ImmutableEntities<'req1' | 'req2', string>;
-  optional?: ImmutableEntities<'opt1' | 'opt2', number>;
+  empty: ImmutableEntities<'opt1' | 'opt2', number>;
 }>;
 
-declare const optionalPlugin: OptionalEntitiesPlugin;
-expectType<PluginURN>(optionalPlugin.name);
+declare const alwaysPresentPlugin: AlwaysPresentEntitiesPlugin;
+expectType<PluginURN>(alwaysPresentPlugin.name);
 expectType<
   Readonly<{
     required: ImmutableEntities<'req1' | 'req2', string>;
-    optional?: ImmutableEntities<'opt1' | 'opt2', number>;
+    empty: ImmutableEntities<'opt1' | 'opt2', number>;
   }>
->(optionalPlugin.entities);
+>(alwaysPresentPlugin.entities);
+
+// Optional declarations are rejected: the property must be provided
+type DeclaredOptionalEntities = {
+  optional?: ImmutableEntities<'opt', number>;
+};
+
+expectError<ImmutablePlugin<DeclaredOptionalEntities>>({
+  name: 'invalid',
+  entities: {},
+});
 
 // ImmutablePlugins tests
 type BasicPlugins = ImmutablePlugins<BasicPlugin>;
@@ -176,8 +187,6 @@ expectType<string[]>(
 );
 
 // ImmutableEntityCollection tests
-import type { ImmutableEntityCollection } from '..';
-
 declare const stringCollection: ImmutableEntityCollection<string, string>;
 declare const symbolCollection: ImmutableEntityCollection<symbol, number>;
 

@@ -20,12 +20,13 @@ The plugin type, must extend ImmutablePlugin
 
 ### Constructor
 
-> **new ImmutableHost**\<`P`\>(`plugins`, `options?`): `ImmutableHost`\<`P`\>
+> **new ImmutableHost**\<`P`\>(`plugins`): `ImmutableHost`\<`P`\>
 
-Defined in: [ImmutableHost.ts:90](https://github.com/agladysh/immutable-plugin-system/blob/main/src/ImmutableHost.ts#L90)
+Defined in: [ImmutableHost.ts:82](https://github.com/agladysh/immutable-plugin-system/blob/main/src/ImmutableHost.ts#L82)
 
 Creates a new ImmutableHost with the provided plugins.
-Groups entities from all plugins by entity type into collections.
+Groups entities from all plugins by entity type into collections and
+enforces that every declared entity type is present on each plugin.
 
 #### Parameters
 
@@ -35,22 +36,6 @@ Groups entities from all plugins by entity type into collections.
 
 Record of plugins mapped by their URNs
 
-##### options?
-
-Optional runtime validation options for integrations.
- - `requiredEntityTypes`: if provided, each plugin must have these entity
-   types present as own properties and valid inner records. This augments
-   structural validation; primary enforcement remains at the type level.
-
-Typing note: The constructor accepts
-`readonly (keyof P['entities'])[]` for `requiredEntityTypes` since the
-generic `P` is known here. Standalone guard functions accept a runtime
-`readonly PropertyKey[]` list for the same semantics (no generic context).
-
-###### requiredEntityTypes?
-
-readonly keyof `P`\[`"entities"`\][]
-
 #### Returns
 
 `ImmutableHost`\<`P`\>
@@ -58,7 +43,7 @@ readonly keyof `P`\[`"entities"`\][]
 #### Throws
 
 TypeError if any plugin is invalid, has mismatched URN, or is
- missing a required entity type specified in `options`.
+ missing a declared entity type
 
 ## Properties
 

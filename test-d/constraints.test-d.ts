@@ -25,11 +25,11 @@ expectError<ImmutableEntityKey>(NaN);
 
 // ImmutableEntities constraint enforcement
 type ValidEntities = ImmutableEntities<string, string>;
-type SymbolEntities = ImmutableEntities<symbol, number>;
+type SymbolEntitiesMap = ImmutableEntities<symbol, number>;
 
 // Valid entity construction - using type assertions
 declare const validStringEntities: ValidEntities;
-declare const validSymbolEntities: SymbolEntities;
+declare const validSymbolEntities: SymbolEntitiesMap;
 expectType<Readonly<Record<string, string>>>(validStringEntities);
 expectType<Readonly<Record<symbol, number>>>(validSymbolEntities);
 
@@ -78,13 +78,13 @@ type RequiredEntities = {
   required2: ImmutableEntities<string, number>;
 };
 
-type OptionalEntities = {
+type RequiredPlugin = ImmutablePlugin<RequiredEntities>;
+type EmptyCapableEntities = {
   required: ImmutableEntities<string, string>;
-  optional?: ImmutableEntities<string, number>;
+  empty: ImmutableEntities<string, number>;
 };
 
-type RequiredPlugin = ImmutablePlugin<RequiredEntities>;
-type OptionalPlugin = ImmutablePlugin<OptionalEntities>;
+type EmptyCapablePlugin = ImmutablePlugin<EmptyCapableEntities>;
 
 // Valid required plugin - all entity types present
 const validRequiredPlugin: RequiredPlugin = {
@@ -108,36 +108,23 @@ expectError(() => {
   return invalidPlugin;
 });
 
-// Valid optional plugin - required present, optional omitted
-const validOptionalPlugin: OptionalPlugin = {
-  name: 'optional-plugin',
+// Valid plugin where some entity types are empty but present
+const validEmptyCapablePlugin: EmptyCapablePlugin = {
+  name: 'empty-capable-plugin',
   entities: {
     required: { key: 'value' },
-    // optional entity type omitted - should be valid
+    empty: {},
   },
 } as const;
-expectType<OptionalPlugin>(validOptionalPlugin);
+expectType<EmptyCapablePlugin>(validEmptyCapablePlugin);
 
-// Valid optional plugin - both required and optional present
-const validOptionalPluginWithOptional: OptionalPlugin = {
-  name: 'optional-plugin-with-optional',
+// Invalid plugin - missing required entity type even if intended empty
+expectError<EmptyCapablePlugin>({
+  name: 'invalid-empty-capable-plugin',
   entities: {
     required: { key: 'value' },
-    optional: { key: 42 },
+    // empty entity type missing
   },
-} as const;
-expectType<OptionalPlugin>(validOptionalPluginWithOptional);
-
-// Invalid optional plugin - missing required entity type
-expectError(() => {
-  const invalidPlugin: OptionalPlugin = {
-    name: 'invalid-optional-plugin',
-    entities: {
-      optional: { key: 42 },
-      // required entity type missing - should cause error
-    },
-  };
-  return invalidPlugin;
 });
 
 // Readonly constraint enforcement
@@ -201,46 +188,38 @@ expectError(() => {
   return invalidPlugin;
 });
 
-// Constraint: Entities must be present even if empty for all-optional plugins
-type AllOptionalEntities = {
-  optional1?: ImmutableEntities<string, string>;
-  optional2?: ImmutableEntities<string, number>;
-};
+// Constraint: Entities may be empty only when no entity types are declared
+type NoEntities = {};
+type NoEntitiesPlugin = ImmutablePlugin<NoEntities>;
 
-type AllOptionalPlugin = ImmutablePlugin<AllOptionalEntities>;
-
-// Valid - empty entities when all are optional
-const validEmptyPlugin: AllOptionalPlugin = {
+const validEmptyPlugin: NoEntitiesPlugin = {
   name: 'empty-plugin',
   entities: {},
 } as const;
-expectType<AllOptionalPlugin>(validEmptyPlugin);
+expectType<NoEntitiesPlugin>(validEmptyPlugin);
 
 // Invalid - missing entities property entirely
-expectError(() => {
-  const invalidPlugin: AllOptionalPlugin = {
-    name: 'invalid-empty-plugin',
-    // entities property missing entirely
-  };
-  return invalidPlugin;
+expectError<NoEntitiesPlugin>({
+  name: 'invalid-empty-plugin',
+  // entities property missing entirely
 });
 
-// Entity type optionality constraints - remove computed symbols
-type SymbolOptionalEntities = {
+// Entity type presence constraints with symbol keys
+type SymbolEntitiesConfig = {
   required: ImmutableEntities<string, string>;
-  optional?: ImmutableEntities<symbol, number>;
+  symbol: ImmutableEntities<symbol, number>;
 };
 
-type SymbolOptionalPlugin = ImmutablePlugin<SymbolOptionalEntities>;
+type SymbolPlugin = ImmutablePlugin<SymbolEntitiesConfig>;
 
-// Valid - required present, optional omitted
-const validSymbolOptional: SymbolOptionalPlugin = {
-  name: 'symbol-optional',
+const validSymbolPlugin: SymbolPlugin = {
+  name: 'symbol-plugin',
   entities: {
     required: { key: 'value' },
+    symbol: {},
   },
 } as const;
-expectType<SymbolOptionalPlugin>(validSymbolOptional);
+expectType<SymbolPlugin>(validSymbolPlugin);
 
 // Host construction constraint - plugins must match their URN keys
 type ConstraintTestPlugin = ImmutablePlugin<{

@@ -53,10 +53,7 @@ t.test('guards: success and failure cases', (t) => {
   t.equal(isImmutablePlugin(POK), true, 'isImmutablePlugin accepts valid');
   t.equal(isImmutablePlugin(PBAD), false, 'isImmutablePlugin rejects invalid');
   t.equal(
-    isImmutablePlugin(
-      { name: 'x', entities: { sec: { a: undefined } } },
-      { requiredEntityTypes: ['sec'] }
-    ),
+    isImmutablePlugin({ name: 'x', entities: { sec: { a: undefined } } }),
     false,
     'rejects plugin with undefined value'
   );

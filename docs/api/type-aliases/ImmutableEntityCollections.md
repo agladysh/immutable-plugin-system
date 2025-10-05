@@ -2,7 +2,7 @@
 
 # Type Alias: ImmutableEntityCollections\<K, T\>
 
-> **ImmutableEntityCollections**\<`K`, `T`\> = \{ readonly \[k in K\]: ImmutableEntityCollection\<Extract\<keyof T\[k\], string \| symbol\>, T\[k\]\[keyof T\[k\]\]\> \}
+> **ImmutableEntityCollections**\<`K`, `T`\> = \{ readonly \[k in K\]-?: ImmutableEntityCollection\<Extract\<keyof T\[k\], string \| symbol\>, T\[k\]\[keyof T\[k\]\]\> \}
 
 Defined in: [ImmutableHost.ts:30](https://github.com/agladysh/immutable-plugin-system/blob/main/src/ImmutableHost.ts#L30)
 

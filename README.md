@@ -96,11 +96,8 @@ const pluginB: Plugin = {
   },
 };
 
-// 3) Create the host; optionally require entity types at runtime
-const host = new ImmutableHost<Plugin>(
-  { pluginA, pluginB },
-  { requiredEntityTypes: ['assets'] }
-);
+// 3) Create the host; entity completeness is enforced automatically
+const host = new ImmutableHost<Plugin>({ pluginA, pluginB });
 
 // 4) Discover entities
 for (const [value, key, plugin] of host.entities.assets) {
@@ -143,8 +140,8 @@ Notes:
 
 - Primary contract is TypeScript; runtime validation is optional and
   integration‑driven.
-- Use `requiredEntityTypes` to enforce presence of specific entity types at
-  runtime when such knowledge exists for your concrete integration.
+- The host already enforces presence of every entity type; guards help validate
+  dynamic inputs before constructing the host or in bespoke tooling.
 
 Guards return booleans (`is*`) or throw on violation (`assert*`). Host
 constructor performs the same validations and throws `TypeError` with
@@ -158,31 +155,30 @@ Validate a single plugin or a plugin record before constructing the host:
 import {
   assertImmutablePlugin,
   assertImmutablePlugins,
-  type ImmutablePlugin,
   type ImmutableEntities,
+  type ImmutablePlugin,
 } from 'immutable-plugin-system';
 
-type P = ImmutablePlugin<{ assets?: ImmutableEntities<string, string> }>;
-const good: P = { name: 'p', entities: {} };
+type P = ImmutablePlugin<{
+  assets: ImmutableEntities<string, string>;
+  commands: ImmutableEntities<string, string>;
+}>;
 
-assertImmutablePlugin(good); // throws TypeError on violation
-assertImmutablePlugins({ p: good }); // throws TypeError on violation
-```
-
-Require a symbol‑keyed entity type at runtime (optional):
-
-```ts
-const symType = Symbol('sym');
-type P = ImmutablePlugin<{ [symType]?: Record<string, string> }>;
-
-// Will throw TypeError if a plugin is missing the symbol entity type
-new ImmutableHost<P>(
-  {
-    /* plugins */
+const candidate: unknown = {
+  name: 'p',
+  entities: {
+    assets: { foo: 'bar' },
+    commands: {},
   },
-  { requiredEntityTypes: [symType] }
-);
+};
+
+assertImmutablePlugin(candidate); // narrows to ImmutablePlugin<P>
+assertImmutablePlugins({ p: candidate });
 ```
+
+Missing entity types trigger `TypeError` during guard checks or host
+construction. Supply empty maps for entity types that have nothing to
+contribute.
 
 ## Development
 
@@ -211,9 +207,9 @@ recommendations.
 
 ## Design Notes
 
-- Required/optional entity types are primarily a TypeScript contract. At
-  runtime, the host cannot infer “requiredness” without an explicit schema. Use
-  `requiredEntityTypes` when runtime enforcement is desirable.
+- Every entity type is required; represent “no entities” with empty
+  `ImmutableEntities` maps. The host enforces this invariant at runtime and
+  throws on omissions.
 - Entity keys exclude numbers and numeric‑like strings to avoid JS coercion
   ambiguity. Prefer textual identifiers or symbols.
 

@@ -1,6 +1,6 @@
 {
   "name": "immutable-plugin-system",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A minimalist strongly typed immutable plugin system for Node.js",
   "type": "module",
   "sideEffects": false,
